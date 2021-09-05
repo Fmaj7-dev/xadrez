@@ -26,3 +26,25 @@ TEST_CASE("FEM custom import")
 
     REQUIRE( exported == init );
 }
+
+TEST_CASE("evaluation")
+{
+    Chessboard cb;
+
+    // test initial evaluation
+    cb.initDefault();
+    float eval = cb.evaluation();
+    REQUIRE( eval == 0.0f );
+
+    // test with one black rook missing
+    std::string init ("1nbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"); 
+    cb.importFem(init);
+    eval = cb.evaluation();
+    REQUIRE( eval == 5.0f );
+
+    // test with one black rook missing
+    std::string init2 ("1nbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNB1KBNR w KQkq - 0 1"); 
+    cb.importFem(init2);
+    eval = cb.evaluation();
+    REQUIRE( eval == -4.0f );
+}
