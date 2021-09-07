@@ -23,6 +23,9 @@ set (SOURCES
   src/main.cpp
   src/uci.cpp
   src/engine.cpp
+  src/chessboard.cpp
+  src/movement.cpp
+  src/position.cpp
 )
 
 find_package(Boost 1.75.0)

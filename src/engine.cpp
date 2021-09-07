@@ -8,8 +8,9 @@ Engine::Engine()
 
 }
 
-std::string Engine::findBestMove()
+std::string Engine::findBestMove( uint32_t seconds )
 {
+    seconds = 0;
     return std::string("e7e5");
 }
 
@@ -26,4 +27,9 @@ std::string Engine::getAuthor()
 std::string Engine::getName()
 {
     return name;
+}
+
+void Engine::loadFem(std::string fem)
+{
+    chessboard_.importFem(fem);
 }

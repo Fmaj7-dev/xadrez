@@ -1,5 +1,7 @@
-#include "engine.h"
+#ifndef UCI_H
+#define UCI_H
 
+#include "engine.h"
 
 /**
  * Universal Chess Interface
@@ -14,3 +16,5 @@ public:
 private:
     Engine engine_;
 };
+
+#endif

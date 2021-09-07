@@ -1,3 +1,6 @@
+#ifndef MOVEMENT_H
+#define MOVEMENT_H
+
 #include "position.h"
 
 #include <cstdint>
@@ -14,3 +17,5 @@ private:
     Position fromSquare_;
     Position toSquare_;
 };
+
+#endif

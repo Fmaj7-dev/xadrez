@@ -1,3 +1,6 @@
+#ifndef CHESSBOARD_H
+#define CHESSBOARD_H
+
 #include "movement.h"
 
 #include <iostream>
@@ -38,7 +41,7 @@ class Chessboard
     const float QUEEN_WEIGHT = 9.0f;
     const float KING_WEIGHT = 1000.0f;
 
-    typedef std::vector<Chessboard> ChessboardArray;
+    //typedef std::vector<Chessboard> ChessboardArray;
 
 public:
     Chessboard();
@@ -83,5 +86,7 @@ private:
     char fullCount_;
 
     // Movement that led to this position
-    Movement movement_;
+    // Movement movement_;
 };
+
+#endif

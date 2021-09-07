@@ -13,4 +13,14 @@ static void etlog(std::string s)
     outfile.flush();
 }
 
+static void etlogread(std::string s)
+{
+    etlog(">> " + s);
+}
+
+static void etlogwrite(std::string s)
+{
+    etlog("<< \t" + s);
+}
+
 #endif

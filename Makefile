@@ -182,6 +182,33 @@ check/fast:
 	$(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/build
 .PHONY : check/fast
 
+src/chessboard.o: src/chessboard.cpp.o
+
+.PHONY : src/chessboard.o
+
+# target to build an object file
+src/chessboard.cpp.o:
+	$(MAKE) -f CMakeFiles/xadrez.dir/build.make CMakeFiles/xadrez.dir/src/chessboard.cpp.o
+.PHONY : src/chessboard.cpp.o
+
+src/chessboard.i: src/chessboard.cpp.i
+
+.PHONY : src/chessboard.i
+
+# target to preprocess a source file
+src/chessboard.cpp.i:
+	$(MAKE) -f CMakeFiles/xadrez.dir/build.make CMakeFiles/xadrez.dir/src/chessboard.cpp.i
+.PHONY : src/chessboard.cpp.i
+
+src/chessboard.s: src/chessboard.cpp.s
+
+.PHONY : src/chessboard.s
+
+# target to generate assembly for a file
+src/chessboard.cpp.s:
+	$(MAKE) -f CMakeFiles/xadrez.dir/build.make CMakeFiles/xadrez.dir/src/chessboard.cpp.s
+.PHONY : src/chessboard.cpp.s
+
 src/engine.o: src/engine.cpp.o
 
 .PHONY : src/engine.o
@@ -236,6 +263,60 @@ src/main.cpp.s:
 	$(MAKE) -f CMakeFiles/xadrez.dir/build.make CMakeFiles/xadrez.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+src/movement.o: src/movement.cpp.o
+
+.PHONY : src/movement.o
+
+# target to build an object file
+src/movement.cpp.o:
+	$(MAKE) -f CMakeFiles/xadrez.dir/build.make CMakeFiles/xadrez.dir/src/movement.cpp.o
+.PHONY : src/movement.cpp.o
+
+src/movement.i: src/movement.cpp.i
+
+.PHONY : src/movement.i
+
+# target to preprocess a source file
+src/movement.cpp.i:
+	$(MAKE) -f CMakeFiles/xadrez.dir/build.make CMakeFiles/xadrez.dir/src/movement.cpp.i
+.PHONY : src/movement.cpp.i
+
+src/movement.s: src/movement.cpp.s
+
+.PHONY : src/movement.s
+
+# target to generate assembly for a file
+src/movement.cpp.s:
+	$(MAKE) -f CMakeFiles/xadrez.dir/build.make CMakeFiles/xadrez.dir/src/movement.cpp.s
+.PHONY : src/movement.cpp.s
+
+src/position.o: src/position.cpp.o
+
+.PHONY : src/position.o
+
+# target to build an object file
+src/position.cpp.o:
+	$(MAKE) -f CMakeFiles/xadrez.dir/build.make CMakeFiles/xadrez.dir/src/position.cpp.o
+.PHONY : src/position.cpp.o
+
+src/position.i: src/position.cpp.i
+
+.PHONY : src/position.i
+
+# target to preprocess a source file
+src/position.cpp.i:
+	$(MAKE) -f CMakeFiles/xadrez.dir/build.make CMakeFiles/xadrez.dir/src/position.cpp.i
+.PHONY : src/position.cpp.i
+
+src/position.s: src/position.cpp.s
+
+.PHONY : src/position.s
+
+# target to generate assembly for a file
+src/position.cpp.s:
+	$(MAKE) -f CMakeFiles/xadrez.dir/build.make CMakeFiles/xadrez.dir/src/position.cpp.s
+.PHONY : src/position.cpp.s
+
 src/uci.o: src/uci.cpp.o
 
 .PHONY : src/uci.o
@@ -277,12 +358,21 @@ help:
 	@echo "... list_install_components"
 	@echo "... xadrez"
 	@echo "... check"
+	@echo "... src/chessboard.o"
+	@echo "... src/chessboard.i"
+	@echo "... src/chessboard.s"
 	@echo "... src/engine.o"
 	@echo "... src/engine.i"
 	@echo "... src/engine.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/movement.o"
+	@echo "... src/movement.i"
+	@echo "... src/movement.s"
+	@echo "... src/position.o"
+	@echo "... src/position.i"
+	@echo "... src/position.s"
 	@echo "... src/uci.o"
 	@echo "... src/uci.i"
 	@echo "... src/uci.s"
