@@ -16,10 +16,22 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src )
 
 # tell cmake to search for more CMakeLists.txt files in these folders
-#add_subdirectory(src/ui)
+add_subdirectory(test)
 
 # main executable
-add_executable(xadrez src/app/main.cpp)
+set (SOURCES
+  src/main.cpp
+  src/uci.cpp
+)
+
+find_package(Boost 1.75.0)
+
+if(Boost_FOUND)
+  include_directories(${Boost_INCLUDE_DIRS})
+  add_executable(xadrez ${SOURCES})
+endif()
+
+
 
 #link_directories(/usr/local/mysql/lib)
 

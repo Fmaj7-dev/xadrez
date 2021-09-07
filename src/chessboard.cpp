@@ -179,3 +179,106 @@ std::string Chessboard::exportFem() const
 
     return fem;
 }
+
+float Chessboard::evaluation()
+{
+    float evaluation = 0;
+
+    for (int i = 0; i < 64; ++i )
+    {
+        if ( data_[i] == WHITE_PAWN )
+            evaluation += PAWN_WEIGHT;
+        if ( data_[i] == WHITE_ROOK )
+            evaluation += ROOK_WEIGHT;
+        if ( data_[i] == WHITE_KNIGHT )
+            evaluation += KNIGHT_WEIGHT;
+        if ( data_[i] == WHITE_BISHOP )
+            evaluation += BISHOP_WEIGHT;
+        if ( data_[i] == WHITE_QUEEN )
+            evaluation += QUEEN_WEIGHT;
+        if ( data_[i] == WHITE_KING )
+            evaluation += KING_WEIGHT;
+
+        if ( data_[i] == BLACK_PAWN )
+            evaluation -= PAWN_WEIGHT;
+        if ( data_[i] == BLACK_ROOK )
+            evaluation -= ROOK_WEIGHT;
+        if ( data_[i] == BLACK_KNIGHT )
+            evaluation -= KNIGHT_WEIGHT;
+        if ( data_[i] == BLACK_BISHOP )
+            evaluation -= BISHOP_WEIGHT;
+        if ( data_[i] == BLACK_QUEEN )
+            evaluation -= QUEEN_WEIGHT;
+        if ( data_[i] == BLACK_KING )
+            evaluation -= KING_WEIGHT;    
+    }
+
+    return evaluation;
+}
+/*
+Chessboard::ChessboardArray Chessboard::findVariations()
+{
+    ChessboardArray array;
+
+    for (int i = 0; i < 64; ++i )
+    {
+        if ( data_[i] == WHITE_PAWN )
+            findPawnVariations(i);
+        if ( data_[i] == WHITE_ROOK )
+            evaluation += ROOK_WEIGHT;
+        if ( data_[i] == WHITE_KNIGHT )
+            evaluation += KNIGHT_WEIGHT;
+        if ( data_[i] == WHITE_BISHOP )
+            evaluation += BISHOP_WEIGHT;
+        if ( data_[i] == WHITE_QUEEN )
+            evaluation += QUEEN_WEIGHT;
+        if ( data_[i] == WHITE_KING )
+            evaluation += KING_WEIGHT;
+
+        if ( data_[i] == BLACK_PAWN )
+            evaluation -= PAWN_WEIGHT;
+        if ( data_[i] == BLACK_ROOK )
+            evaluation -= ROOK_WEIGHT;
+        if ( data_[i] == BLACK_KNIGHT )
+            evaluation -= KNIGHT_WEIGHT;
+        if ( data_[i] == BLACK_BISHOP )
+            evaluation -= BISHOP_WEIGHT;
+        if ( data_[i] == BLACK_QUEEN )
+            evaluation -= QUEEN_WEIGHT;
+        if ( data_[i] == BLACK_KING )
+            evaluation -= KING_WEIGHT;    
+    }
+
+    return array;
+}
+
+ChessboardArray Chessboard::findPawnVariations(int square, PLAYER player)
+{
+    if ( player == PLAYER::WHITE )
+    {
+        // if first movement of the pawn
+        if( square >= 48 && square <= 55 )
+        {
+            if ( !isSquareOccupied(square - 8) )
+
+        }
+    }
+}
+
+
+bool Chessboard::isSquareOccupied( int square )
+{
+
+}
+
+bool Chessboard::isSquareWhite( int square )
+{
+
+}
+
+bool Chessboard::isSquareBlack( int square )
+{
+
+}
+
+*/

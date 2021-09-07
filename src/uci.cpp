@@ -58,7 +58,7 @@ int UCI::run()
         }
         else if ( read == "go movetime 6000")
         {
-            cout << "bestmove d2d4 ponder d7d5" << endl;
+            cout << "bestmove e7e5 ponder g1f3" << endl;
         }
 
         else if ( read == exitt ||

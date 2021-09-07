@@ -169,32 +169,72 @@ xadrez/fast:
 	$(MAKE) -f CMakeFiles/xadrez.dir/build.make CMakeFiles/xadrez.dir/build
 .PHONY : xadrez/fast
 
-src/app/main.o: src/app/main.cpp.o
+#=============================================================================
+# Target rules for targets named check
 
-.PHONY : src/app/main.o
+# Build rule for target.
+check: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 check
+.PHONY : check
+
+# fast build rule for target.
+check/fast:
+	$(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/build
+.PHONY : check/fast
+
+src/main.o: src/main.cpp.o
+
+.PHONY : src/main.o
 
 # target to build an object file
-src/app/main.cpp.o:
-	$(MAKE) -f CMakeFiles/xadrez.dir/build.make CMakeFiles/xadrez.dir/src/app/main.cpp.o
-.PHONY : src/app/main.cpp.o
+src/main.cpp.o:
+	$(MAKE) -f CMakeFiles/xadrez.dir/build.make CMakeFiles/xadrez.dir/src/main.cpp.o
+.PHONY : src/main.cpp.o
 
-src/app/main.i: src/app/main.cpp.i
+src/main.i: src/main.cpp.i
 
-.PHONY : src/app/main.i
+.PHONY : src/main.i
 
 # target to preprocess a source file
-src/app/main.cpp.i:
-	$(MAKE) -f CMakeFiles/xadrez.dir/build.make CMakeFiles/xadrez.dir/src/app/main.cpp.i
-.PHONY : src/app/main.cpp.i
+src/main.cpp.i:
+	$(MAKE) -f CMakeFiles/xadrez.dir/build.make CMakeFiles/xadrez.dir/src/main.cpp.i
+.PHONY : src/main.cpp.i
 
-src/app/main.s: src/app/main.cpp.s
+src/main.s: src/main.cpp.s
 
-.PHONY : src/app/main.s
+.PHONY : src/main.s
 
 # target to generate assembly for a file
-src/app/main.cpp.s:
-	$(MAKE) -f CMakeFiles/xadrez.dir/build.make CMakeFiles/xadrez.dir/src/app/main.cpp.s
-.PHONY : src/app/main.cpp.s
+src/main.cpp.s:
+	$(MAKE) -f CMakeFiles/xadrez.dir/build.make CMakeFiles/xadrez.dir/src/main.cpp.s
+.PHONY : src/main.cpp.s
+
+src/uci.o: src/uci.cpp.o
+
+.PHONY : src/uci.o
+
+# target to build an object file
+src/uci.cpp.o:
+	$(MAKE) -f CMakeFiles/xadrez.dir/build.make CMakeFiles/xadrez.dir/src/uci.cpp.o
+.PHONY : src/uci.cpp.o
+
+src/uci.i: src/uci.cpp.i
+
+.PHONY : src/uci.i
+
+# target to preprocess a source file
+src/uci.cpp.i:
+	$(MAKE) -f CMakeFiles/xadrez.dir/build.make CMakeFiles/xadrez.dir/src/uci.cpp.i
+.PHONY : src/uci.cpp.i
+
+src/uci.s: src/uci.cpp.s
+
+.PHONY : src/uci.s
+
+# target to generate assembly for a file
+src/uci.cpp.s:
+	$(MAKE) -f CMakeFiles/xadrez.dir/build.make CMakeFiles/xadrez.dir/src/uci.cpp.s
+.PHONY : src/uci.cpp.s
 
 # Help Target
 help:
@@ -209,9 +249,13 @@ help:
 	@echo "... install"
 	@echo "... list_install_components"
 	@echo "... xadrez"
-	@echo "... src/app/main.o"
-	@echo "... src/app/main.i"
-	@echo "... src/app/main.s"
+	@echo "... check"
+	@echo "... src/main.o"
+	@echo "... src/main.i"
+	@echo "... src/main.s"
+	@echo "... src/uci.o"
+	@echo "... src/uci.i"
+	@echo "... src/uci.s"
 .PHONY : help
 
 

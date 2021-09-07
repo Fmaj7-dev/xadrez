@@ -4,6 +4,8 @@ project(xadrez)
 set (SOURCES
   ../src/uci.cpp
   ../src/chessboard.cpp
+  ../src/position.cpp
+  ../src/movement.cpp
 )
 
 find_package(Boost 1.75.0)
@@ -13,6 +15,8 @@ if(Boost_FOUND)
   add_executable( check 
                 ${SOURCES}
                 testChessboard.cpp
+                testPosition.cpp
+                testMovement.cpp
                 )
 endif()
 

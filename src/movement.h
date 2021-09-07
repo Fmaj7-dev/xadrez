@@ -5,7 +5,7 @@
 class Movement
 {
 public:
-    Movement(uint8_t from, uint8_t to);
+    Movement( uint8_t from=0, uint8_t to=0 );
 
     std::string str();
 
