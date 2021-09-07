@@ -1,3 +1,4 @@
+#include "engine.h"
 
 
 /**
@@ -9,4 +10,7 @@ public:
     UCI();
 
     int run();
+
+private:
+    Engine engine_;
 };

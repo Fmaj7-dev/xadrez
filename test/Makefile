@@ -198,6 +198,33 @@ __/src/chessboard.cpp.s:
 	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/__/src/chessboard.cpp.s
 .PHONY : __/src/chessboard.cpp.s
 
+__/src/engine.o: __/src/engine.cpp.o
+
+.PHONY : __/src/engine.o
+
+# target to build an object file
+__/src/engine.cpp.o:
+	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/__/src/engine.cpp.o
+.PHONY : __/src/engine.cpp.o
+
+__/src/engine.i: __/src/engine.cpp.i
+
+.PHONY : __/src/engine.i
+
+# target to preprocess a source file
+__/src/engine.cpp.i:
+	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/__/src/engine.cpp.i
+.PHONY : __/src/engine.cpp.i
+
+__/src/engine.s: __/src/engine.cpp.s
+
+.PHONY : __/src/engine.s
+
+# target to generate assembly for a file
+__/src/engine.cpp.s:
+	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/__/src/engine.cpp.s
+.PHONY : __/src/engine.cpp.s
+
 __/src/movement.o: __/src/movement.cpp.o
 
 .PHONY : __/src/movement.o
@@ -376,6 +403,9 @@ help:
 	@echo "... __/src/chessboard.o"
 	@echo "... __/src/chessboard.i"
 	@echo "... __/src/chessboard.s"
+	@echo "... __/src/engine.o"
+	@echo "... __/src/engine.i"
+	@echo "... __/src/engine.s"
 	@echo "... __/src/movement.o"
 	@echo "... __/src/movement.i"
 	@echo "... __/src/movement.s"

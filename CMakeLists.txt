@@ -22,6 +22,7 @@ add_subdirectory(test)
 set (SOURCES
   src/main.cpp
   src/uci.cpp
+  src/engine.cpp
 )
 
 find_package(Boost 1.75.0)

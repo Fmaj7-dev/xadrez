@@ -182,6 +182,33 @@ check/fast:
 	$(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/build
 .PHONY : check/fast
 
+src/engine.o: src/engine.cpp.o
+
+.PHONY : src/engine.o
+
+# target to build an object file
+src/engine.cpp.o:
+	$(MAKE) -f CMakeFiles/xadrez.dir/build.make CMakeFiles/xadrez.dir/src/engine.cpp.o
+.PHONY : src/engine.cpp.o
+
+src/engine.i: src/engine.cpp.i
+
+.PHONY : src/engine.i
+
+# target to preprocess a source file
+src/engine.cpp.i:
+	$(MAKE) -f CMakeFiles/xadrez.dir/build.make CMakeFiles/xadrez.dir/src/engine.cpp.i
+.PHONY : src/engine.cpp.i
+
+src/engine.s: src/engine.cpp.s
+
+.PHONY : src/engine.s
+
+# target to generate assembly for a file
+src/engine.cpp.s:
+	$(MAKE) -f CMakeFiles/xadrez.dir/build.make CMakeFiles/xadrez.dir/src/engine.cpp.s
+.PHONY : src/engine.cpp.s
+
 src/main.o: src/main.cpp.o
 
 .PHONY : src/main.o
@@ -250,6 +277,9 @@ help:
 	@echo "... list_install_components"
 	@echo "... xadrez"
 	@echo "... check"
+	@echo "... src/engine.o"
+	@echo "... src/engine.i"
+	@echo "... src/engine.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

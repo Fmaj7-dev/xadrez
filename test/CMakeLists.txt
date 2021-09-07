@@ -6,6 +6,7 @@ set (SOURCES
   ../src/chessboard.cpp
   ../src/position.cpp
   ../src/movement.cpp
+  ../src/engine.cpp
 )
 
 find_package(Boost 1.75.0)

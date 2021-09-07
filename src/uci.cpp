@@ -1,13 +1,9 @@
 #include "uci.h"
+#include "log.h"
 
 #include <iostream>
-#include <fstream>
 
 using namespace std;
-
-// strings
-const string author("FMaj7");
-const string name("xadrez");
 
 // commands
 const string stop("stop");
@@ -27,7 +23,7 @@ UCI::UCI()
 
 int UCI::run()
 {
-    cout << name << " " << author << endl;
+    cout << engine_.getName() << " " << engine_.getAuthor() << endl;
     while( true )
     {
         // read input
@@ -35,20 +31,13 @@ int UCI::run()
         getline(cin, read);
 
         // write input to log
-        {
-            ofstream outfile;
-
-            outfile.open("/Users/enrique/projects/xadrez/log.txt", ios_base::app);
-            outfile << read << endl; 
-            outfile.close();
-            outfile.flush();
-        }
+        etlog(read);
 
         // process commands
         if ( read == uci )
         {
-            cout << "id name " << name << endl;
-            cout << "id author " << author << endl;
+            cout << "id name " << engine_.getName() << endl;
+            cout << "id author " << engine_.getAuthor() << endl;
             cout << "option name Debug Log File type string default" << endl;
             cout << uciok << endl;
         }
