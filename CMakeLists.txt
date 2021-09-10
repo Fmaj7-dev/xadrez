@@ -26,6 +26,7 @@ set (SOURCES
   src/chessboard.cpp
   src/movement.cpp
   src/position.cpp
+  src/variation.cpp
 )
 
 find_package(Boost 1.75.0)

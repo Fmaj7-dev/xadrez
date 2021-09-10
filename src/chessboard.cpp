@@ -1,5 +1,7 @@
 #include "chessboard.h"
+#include "variation.h"
 
+#include <algorithm>
 #include <boost/algorithm/string.hpp>
 
 Chessboard::Chessboard()
@@ -8,10 +10,22 @@ Chessboard::Chessboard()
     enpassant_[1] = 0;
 }
 
+const Chessboard& Chessboard::operator=(const Chessboard& rhs)
+{
+    std::copy(std::begin(rhs.data_), std::end(rhs.data_), std::begin(data_));
+    turn_ = rhs.turn_;
+    castling_ = rhs.castling_;
+    std::copy(std::begin(rhs.enpassant_), std::end(rhs.enpassant_), std::begin(enpassant_));
+    halfCount_ = rhs.halfCount_;
+    fullCount_ = rhs.fullCount_;
+
+    return *this;
+}
+
     
 void Chessboard::initDefault()
 {
-    importFem("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 }
 
 bool isValidNumber(char c)
@@ -39,19 +53,19 @@ bool isSpace(char c)
     return c == ' ';
 }
 
-void Chessboard::importFem(const std::string& fem)
+void Chessboard::importFen(const std::string& fen)
 {
-    std::vector<std::string> fem_strings;
-    boost::split(fem_strings, fem, boost::is_any_of("\t "));
+    std::vector<std::string> fen_strings;
+    boost::split(fen_strings, fen, boost::is_any_of("\t "));
 
 // 1. Import pieces
     // the place of the array to be filled next
     int insertPosition = 0;
 
     // i = the position of the string we are working on with
-    for ( size_t i = 0; i < fem_strings[0].length(); ++i )
+    for ( size_t i = 0; i < fen_strings[0].length(); ++i )
     {
-        char c = fem_strings[0][i];
+        char c = fen_strings[0][i];
 
         if ( isValidNumber(c) )
             for (int n = 0; n < c-'0'; ++n)
@@ -67,32 +81,32 @@ void Chessboard::importFem(const std::string& fem)
     }
 
 // 2. import active colour
-    turn_ = fem_strings[1][0];
+    turn_ = fen_strings[1][0];
 
 // 3. import castling
-    for ( size_t i = 0; i < fem_strings[2].length(); ++i )
+    for ( size_t i = 0; i < fen_strings[2].length(); ++i )
     {
-        if (fem_strings[2][i] == 'K')
+        if (fen_strings[2][i] == 'K')
             castling_ |= (char) CASTLING::WHITE_KING;
 
-        if (fem_strings[2][i] == 'Q')
+        if (fen_strings[2][i] == 'Q')
             castling_ |= (char) CASTLING::WHITE_QUEEN;
 
-        if (fem_strings[2][i] == 'k')
+        if (fen_strings[2][i] == 'k')
             castling_ |= (char) CASTLING::BLACK_KING;
 
-        if (fem_strings[2][i] == 'q')
+        if (fen_strings[2][i] == 'q')
             castling_ |= (char) CASTLING::BLACK_QUEEN;            
     }
 
 // 4. import en passant
-    enpassant_[0]=fem_strings[3][0];
-    enpassant_[1]=fem_strings[3][1];
+    enpassant_[0]=fen_strings[3][0];
+    enpassant_[1]=fen_strings[3][1];
 
 // 5. import halfmove (movement count for the 50-move rule)
-    halfCount_ = (char)std::stoi( fem_strings[4] );
+    halfCount_ = (char)std::stoi( fen_strings[4] );
 // 6. import fullmove (total # of movements)
-    fullCount_ = (char)std::stoi( fem_strings[5] );
+    fullCount_ = (char)std::stoi( fen_strings[5] );
 }
 
 void Chessboard::print() const
@@ -104,9 +118,9 @@ void Chessboard::print() const
     std::cout<<std::endl;
 }
 
-std::string Chessboard::exportFem() const
+std::string Chessboard::exportFen() const
 {
-    std::string fem;
+    std::string fen;
 
 // 1. export pieces
     int sequencyEmpty = 0;
@@ -118,10 +132,10 @@ std::string Chessboard::exportFem() const
         {
             if (sequencyEmpty != 0)
             {
-                fem.push_back(sequencyEmpty + '0');
+                fen.push_back(sequencyEmpty + '0');
                 sequencyEmpty = 0;
             }
-            fem.push_back('/');
+            fen.push_back('/');
         }
 
         // accumulate empty squares...
@@ -132,52 +146,52 @@ std::string Chessboard::exportFem() const
         {
             if (sequencyEmpty != 0)
             {
-                fem.push_back(sequencyEmpty + '0');
+                fen.push_back(sequencyEmpty + '0');
                 sequencyEmpty = 0;
             }
-            fem.push_back(data_[i]);
+            fen.push_back(data_[i]);
         }
     }
 
 // 2. export active colour
-    fem.push_back(' ');
-    fem.push_back(turn_);
+    fen.push_back(' ');
+    fen.push_back(turn_);
 
 // 3. export castling
-    fem.push_back(' ');
+    fen.push_back(' ');
     if ( castling_ == 0 )
-        fem.push_back('-');
+        fen.push_back('-');
     else
     {
         if ( castling_ & static_cast<uint8_t>(CASTLING::WHITE_KING) )
-            fem.push_back('K');
+            fen.push_back('K');
         if ( castling_ & static_cast<uint8_t>(CASTLING::WHITE_QUEEN) )
-            fem.push_back('Q');
+            fen.push_back('Q');
         if ( castling_ & static_cast<uint8_t>(CASTLING::BLACK_KING) )
-            fem.push_back('k');
+            fen.push_back('k');
         if ( castling_ & static_cast<uint8_t>(CASTLING::BLACK_QUEEN) )
-            fem.push_back('q');
+            fen.push_back('q');
     }
 
 // 4. export en passant
-    fem.push_back(' ');
+    fen.push_back(' ');
 
     if ( enpassant_[0] == '-' )
-        fem.push_back('-');
+        fen.push_back('-');
     else
     {
-        fem.push_back(enpassant_[0]);
-        fem.push_back(enpassant_[1]);
+        fen.push_back(enpassant_[0]);
+        fen.push_back(enpassant_[1]);
     }
 
 // 5. export halfmove (movement count for the 50-move rule)
-    fem.push_back(' ');
-    fem += std::to_string((int)halfCount_ );
+    fen.push_back(' ');
+    fen += std::to_string((int)halfCount_ );
 // 6. export fullmove (total # of movements)
-    fem.push_back(' ');
-    fem += std::to_string((int)fullCount_);
+    fen.push_back(' ');
+    fen += std::to_string((int)fullCount_);
 
-    return fem;
+    return fen;
 }
 
 float Chessboard::evaluation()
@@ -215,63 +229,107 @@ float Chessboard::evaluation()
 
     return evaluation;
 }
-/*
-Chessboard::ChessboardArray Chessboard::findVariations()
+
+void Chessboard::appendVariation(Variations& variations, int from, int to )
 {
-    ChessboardArray array;
+    Movement movement(from, to);
 
-    for (int i = 0; i < 64; ++i )
-    {
-        if ( data_[i] == WHITE_PAWN )
-            findPawnVariations(i);
-        if ( data_[i] == WHITE_ROOK )
-            evaluation += ROOK_WEIGHT;
-        if ( data_[i] == WHITE_KNIGHT )
-            evaluation += KNIGHT_WEIGHT;
-        if ( data_[i] == WHITE_BISHOP )
-            evaluation += BISHOP_WEIGHT;
-        if ( data_[i] == WHITE_QUEEN )
-            evaluation += QUEEN_WEIGHT;
-        if ( data_[i] == WHITE_KING )
-            evaluation += KING_WEIGHT;
+    Variation variation;
+    variation.chessboard_ = *this;
+    variation.movement_ = movement;
 
-        if ( data_[i] == BLACK_PAWN )
-            evaluation -= PAWN_WEIGHT;
-        if ( data_[i] == BLACK_ROOK )
-            evaluation -= ROOK_WEIGHT;
-        if ( data_[i] == BLACK_KNIGHT )
-            evaluation -= KNIGHT_WEIGHT;
-        if ( data_[i] == BLACK_BISHOP )
-            evaluation -= BISHOP_WEIGHT;
-        if ( data_[i] == BLACK_QUEEN )
-            evaluation -= QUEEN_WEIGHT;
-        if ( data_[i] == BLACK_KING )
-            evaluation -= KING_WEIGHT;    
-    }
+    if (turn_ == 'b')
+        variation.chessboard_.turn_ = 'w';
+    if (turn_ == 'w')
+        variation.chessboard_.turn_ = 'b';
 
-    return array;
+    variation.chessboard_.applyMovement( movement );
+
+    variations.push_back( variation );
 }
 
-ChessboardArray Chessboard::findPawnVariations(int square, PLAYER player)
+void Chessboard::applyMovement( Movement& m )
 {
-    if ( player == PLAYER::WHITE )
+    data_[m.to().getValue()] = data_[m.from().getValue()];
+    data_[m.from().getValue()] = '0';
+}
+
+void Chessboard::findVariations( Variations& variations )
+{
+    for (int i = 0; i < 64; ++i )
+    {
+        if ( turn_ == 'w' )
+        {
+            if ( data_[i] == WHITE_PAWN )
+                findPawnVariations(variations, i);
+            /*if ( data_[i] == WHITE_ROOK )
+                evaluation += ROOK_WEIGHT;*/
+            if ( data_[i] == WHITE_KNIGHT )
+                findKnightVariations(variations, i);
+            /*if ( data_[i] == WHITE_BISHOP )
+                evaluation += BISHOP_WEIGHT;
+            if ( data_[i] == WHITE_QUEEN )
+                evaluation += QUEEN_WEIGHT;
+            if ( data_[i] == WHITE_KING )
+                evaluation += KING_WEIGHT;*/
+        }
+
+        if ( turn_ == 'b' )
+        {
+            if ( data_[i] == BLACK_PAWN )
+                findPawnVariations(variations, i);
+            /*if ( data_[i] == BLACK_ROOK )
+                evaluation -= ROOK_WEIGHT;*/
+            if ( data_[i] == BLACK_KNIGHT )
+                findKnightVariations(variations, i);
+            /*if ( data_[i] == BLACK_BISHOP )
+                evaluation -= BISHOP_WEIGHT;
+            if ( data_[i] == BLACK_QUEEN )
+                evaluation -= QUEEN_WEIGHT;
+            if ( data_[i] == BLACK_KING )
+                evaluation -= KING_WEIGHT;*/
+        }
+    }
+}
+
+void Chessboard::findPawnVariations(Variations& variations, int square)
+{
+    if ( turn_ == 'w' )
     {
         // if first movement of the pawn
         if( square >= 48 && square <= 55 )
         {
-            if ( !isSquareOccupied(square - 8) )
-
+            if ( !isSquareOccupied(square - 16) )
+                appendVariation(variations, square, square - 16);
         }
+        if ( !isSquareOccupied(square - 8) )
+                appendVariation(variations, square, square - 8);
     }
+    else if (turn_ == 'b')
+    {
+        // if first movement of the pawn
+        if( square >= 8 && square <= 15 )
+        {
+            if ( !isSquareOccupied(square + 16) )
+                appendVariation(variations, square, square + 16);
+        }
+        if ( !isSquareOccupied(square + 8) )
+                appendVariation(variations, square, square + 8);
+    }
+}
+
+void Chessboard::findKnightVariations(Variations& variations, int square )
+{
+    
 }
 
 
 bool Chessboard::isSquareOccupied( int square )
 {
-
+    return data_[square] != '0';
 }
 
-bool Chessboard::isSquareWhite( int square )
+/*bool Chessboard::isSquareWhite( int square )
 {
 
 }
@@ -279,6 +337,4 @@ bool Chessboard::isSquareWhite( int square )
 bool Chessboard::isSquareBlack( int square )
 {
 
-}
-
-*/
+}*/

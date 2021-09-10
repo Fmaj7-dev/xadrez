@@ -306,6 +306,33 @@ __/src/uci.cpp.s:
 	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/__/src/uci.cpp.s
 .PHONY : __/src/uci.cpp.s
 
+__/src/variation.o: __/src/variation.cpp.o
+
+.PHONY : __/src/variation.o
+
+# target to build an object file
+__/src/variation.cpp.o:
+	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/__/src/variation.cpp.o
+.PHONY : __/src/variation.cpp.o
+
+__/src/variation.i: __/src/variation.cpp.i
+
+.PHONY : __/src/variation.i
+
+# target to preprocess a source file
+__/src/variation.cpp.i:
+	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/__/src/variation.cpp.i
+.PHONY : __/src/variation.cpp.i
+
+__/src/variation.s: __/src/variation.cpp.s
+
+.PHONY : __/src/variation.s
+
+# target to generate assembly for a file
+__/src/variation.cpp.s:
+	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/__/src/variation.cpp.s
+.PHONY : __/src/variation.cpp.s
+
 testChessboard.o: testChessboard.cpp.o
 
 .PHONY : testChessboard.o
@@ -415,6 +442,9 @@ help:
 	@echo "... __/src/uci.o"
 	@echo "... __/src/uci.i"
 	@echo "... __/src/uci.s"
+	@echo "... __/src/variation.o"
+	@echo "... __/src/variation.i"
+	@echo "... __/src/variation.s"
 	@echo "... testChessboard.o"
 	@echo "... testChessboard.i"
 	@echo "... testChessboard.s"

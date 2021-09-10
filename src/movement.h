@@ -12,6 +12,9 @@ public:
 
     std::string str();
 
+    const Position& from();
+    const Position& to();
+
 private:
     // index to the array
     Position fromSquare_;

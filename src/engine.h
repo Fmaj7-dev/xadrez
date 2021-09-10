@@ -20,7 +20,7 @@ public:
     std::string getName();
 
     // load fem to chessboard
-    void loadFem(std::string fem);
+    void loadFen(std::string fen);
 
     std::string findBestMove( uint32_t seconds );
     void cancelFind();

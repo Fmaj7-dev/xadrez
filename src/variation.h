@@ -11,7 +11,7 @@ class Variation
 public:
     Variation();
 
-private:
+//private:
     Movement movement_;
 
     Chessboard chessboard_;

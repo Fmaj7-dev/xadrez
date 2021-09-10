@@ -1,5 +1,7 @@
-#include <string>
+#ifndef POSITION_H
+#define POSITION_H
 
+#include <string>
 
 class Position
 {
@@ -14,3 +16,5 @@ private:
     uint8_t pos_;
 
 };
+
+#endif

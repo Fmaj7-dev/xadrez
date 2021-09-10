@@ -5,6 +5,9 @@
 
 #include <iostream>
 
+class Variation;
+typedef std::vector<Variation> Variations;
+
 class Chessboard
 {
     enum class PLAYER 
@@ -45,17 +48,21 @@ class Chessboard
 
 public:
     Chessboard();
+    const Chessboard& operator=(const Chessboard& rhs);
     
     void initDefault();
 
     // fem 
-    void importFem(const std::string& fem);
-    std::string exportFem() const;
+    void importFen(const std::string& fen);
+    std::string exportFen() const;
 
     // variations
-    /*void appendVariation(ChessboardArray& array, );
-    ChessboardArray findVariations();
-    ChessboardArray findPawnVariations(int square, PLAYER player);*/
+    void appendVariation(Variations& variations, int from, int to );
+    void findVariations(Variations& variations);
+    void findPawnVariations(Variations& variations, int square);
+    void findKnightVariations(Variations& variations, int square );
+
+    void applyMovement( Movement& m );
 
     bool isSquareOccupied( int square );
     bool isSquareWhite( int square );

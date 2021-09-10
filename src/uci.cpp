@@ -7,12 +7,19 @@
 
 using namespace std;
 
+// example
+// uci
+// isready
+// position fen rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+
 // commands
 const string stop("stop");
 const string quit("quit");
 const string exitt("exit");
 const string uci("uci");
 const string isready("isready");
+const string position("position");
+const string fen("fen");
 
 // output strings
 const string uciok("uciok");
@@ -21,6 +28,11 @@ const string readyok("readyok");
 UCI::UCI()
 {
     etlog("------------- NEW EXECUTION -----------------");
+}
+
+bool BothAreSpaces(char lhs, char rhs) 
+{ 
+    return (lhs == rhs) && (lhs == ' '); 
 }
 
 int UCI::run()
@@ -34,6 +46,9 @@ int UCI::run()
 
         // write input to log
         etlogread(read);
+
+        std::string::iterator new_end = std::unique(read.begin(), read.end(), BothAreSpaces);
+        read.erase(new_end, read.end());
 
         // split line into an array
         stringstream ssin(read);
@@ -65,6 +80,11 @@ int UCI::run()
             cout << readyok << endl;
 
             etlogwrite( readyok );
+        }
+        else if (command[0] == position && command[1] == fen)
+        {
+            std::string fen_str = read.substr(13);
+            engine_.loadFen(fen_str);
         }
         else if ( command[0] == "go")
         {

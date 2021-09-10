@@ -7,6 +7,7 @@ set (SOURCES
   ../src/position.cpp
   ../src/movement.cpp
   ../src/engine.cpp
+  ../src/variation.cpp
 )
 
 find_package(Boost 1.75.0)
@@ -26,4 +27,5 @@ install(TARGETS check DESTINATION build)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../src )
 
-target_compile_options(check PRIVATE -Wall -Wextra -pedantic -Werror -std=c++17 -Wc++11-extensions)
+#target_compile_options(check PRIVATE -Wall -Wextra -pedantic -Werror -std=c++17 -Wc++11-extensions)
+target_compile_options(check PRIVATE -std=c++17 -Wc++11-extensions)

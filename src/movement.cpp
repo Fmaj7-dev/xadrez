@@ -14,3 +14,13 @@ std::string Movement::str()
 
     return fromSquare_.str() + toSquare_.str();
 }
+
+const Position& Movement::from()
+{
+    return fromSquare_;
+}
+
+const Position& Movement::to()
+{
+    return toSquare_;
+}
