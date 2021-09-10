@@ -24,18 +24,23 @@ class Chessboard
         BLACK_QUEEN = 1 << 3
     };
 
-    const char WHITE_PAWN = 'P';
-    const char WHITE_ROOK = 'R';
-    const char WHITE_KNIGHT = 'N';
-    const char WHITE_BISHOP = 'B';
-    const char WHITE_KING = 'K';
-    const char WHITE_QUEEN = 'Q';
-    const char BLACK_PAWN = 'p';
-    const char BLACK_ROOK = 'r';
-    const char BLACK_KNIGHT = 'n';
-    const char BLACK_BISHOP = 'b';
-    const char BLACK_KING = 'k';
-    const char BLACK_QUEEN = 'q';
+    constexpr static char WHITE_PAWN = 'P';
+    constexpr static char WHITE_ROOK = 'R';
+    constexpr static char WHITE_KNIGHT = 'N';
+    constexpr static char WHITE_BISHOP = 'B';
+    constexpr static char WHITE_KING = 'K';
+    constexpr static char WHITE_QUEEN = 'Q';
+    constexpr static char BLACK_PAWN = 'p';
+    constexpr static char BLACK_ROOK = 'r';
+    constexpr static char BLACK_KNIGHT = 'n';
+    constexpr static char BLACK_BISHOP = 'b';
+    constexpr static char BLACK_KING = 'k';
+    constexpr static char BLACK_QUEEN = 'q';
+
+    constexpr static char EMPTY_SQUARE = '0';
+
+    constexpr static char WHITE_TURN = 'w';
+    constexpr static char BLACK_TURN = 'b';
 
     const float PAWN_WEIGHT = 1.0f;
     const float ROOK_WEIGHT = 5.0f;
@@ -43,8 +48,6 @@ class Chessboard
     const float BISHOP_WEIGHT = 3.0f;
     const float QUEEN_WEIGHT = 9.0f;
     const float KING_WEIGHT = 1000.0f;
-
-    //typedef std::vector<Chessboard> ChessboardArray;
 
 public:
     Chessboard();
@@ -57,25 +60,25 @@ public:
     std::string exportFen() const;
 
     // variations
-    void appendVariation(Variations& variations, int from, int to );
-    void findVariations(Variations& variations);
-    void findPawnVariations(Variations& variations, int square);
-    void findKnightVariations(Variations& variations, int square );
-    void findRookVariations(Variations& variations, int square );
-    void findBishopVariations(Variations& variations, int square );
-    void findQueenVariations(Variations& variations, int square );
+    void appendVariation(Variations& variations, int from, int to ) const;
+    void findVariations(Variations& variations) const;
+    void findPawnVariations(Variations& variations, int square) const;
+    void findKnightVariations(Variations& variations, int square ) const;
+    void findRookVariations(Variations& variations, int square ) const;
+    void findBishopVariations(Variations& variations, int square ) const;
+    void findQueenVariations(Variations& variations, int square ) const;
 
+    // move
     void applyMovement( Movement& m );
 
-    bool isSquareOccupied( int square );
-    bool isSquareWhite( int square );
-    bool isSquareBlack( int square );
-    bool validCoordinates(int x, int y);
+    // queries about squares, coordinates
+    bool isSquareOccupied( int square ) const;
+    bool isSquareWhite( int square ) const;
+    bool isSquareBlack( int square ) const;
+    bool validCoordinates(int x, int y) const;
 
     // evaluation
-    float evaluation();
-
-    void print() const;
+    float evaluation() const;
 
 private:
     // 64 squares of the board starting top-left
@@ -95,9 +98,6 @@ private:
 
     // full counter
     char fullCount_;
-
-    // Movement that led to this position
-    // Movement movement_;
 };
 
 #endif

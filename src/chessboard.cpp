@@ -23,7 +23,6 @@ const Chessboard& Chessboard::operator=(const Chessboard& rhs)
     return *this;
 }
 
-    
 void Chessboard::initDefault()
 {
     importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
@@ -59,7 +58,7 @@ void Chessboard::importFen(const std::string& fen)
     std::vector<std::string> fen_strings;
     boost::split(fen_strings, fen, boost::is_any_of("\t "));
 
-// 1. Import pieces
+    // 1. Import pieces
     // the place of the array to be filled next
     int insertPosition = 0;
 
@@ -70,7 +69,7 @@ void Chessboard::importFen(const std::string& fen)
 
         if ( isValidNumber(c) )
             for (int n = 0; n < c-'0'; ++n)
-                data_[insertPosition++] = '0';
+                data_[insertPosition++] = EMPTY_SQUARE;
 
         else if ( isValidPiece(c) )
             data_[insertPosition++] = c;
@@ -81,10 +80,10 @@ void Chessboard::importFen(const std::string& fen)
         }
     }
 
-// 2. import active colour
+    // 2. import active colour
     turn_ = fen_strings[1][0];
 
-// 3. import castling
+    // 3. import castling
     for ( size_t i = 0; i < fen_strings[2].length(); ++i )
     {
         if (fen_strings[2][i] == 'K')
@@ -100,33 +99,25 @@ void Chessboard::importFen(const std::string& fen)
             castling_ |= (char) CASTLING::BLACK_QUEEN;            
     }
 
-// 4. import en passant
+    // 4. import en passant
     enpassant_[0]=fen_strings[3][0];
     enpassant_[1]=fen_strings[3][1];
 
-// 5. import halfmove (movement count for the 50-move rule)
+    // 5. import halfmove (movement count for the 50-move rule)
     halfCount_ = (char)std::stoi( fen_strings[4] );
-// 6. import fullmove (total # of movements)
+
+    // 6. import fullmove (total # of movements)
     fullCount_ = (char)std::stoi( fen_strings[5] );
-}
-
-void Chessboard::print() const
-{
-    std::cout<<"DATA: \n";
-    for (size_t i = 0; i < 64; ++i)
-        std::cout<<data_[i]<<" ";
-
-    std::cout<<std::endl;
 }
 
 std::string Chessboard::exportFen() const
 {
     std::string fen;
 
-// 1. export pieces
+    // 1. export pieces
     int sequencyEmpty = 0;
 
-    for (int i = 0; i < 64; ++i )
+    for ( int i = 0; i < 64; ++i )
     {
         // end of rank, insert '/'
         if (i!=0 && i%8 == 0)
@@ -140,7 +131,7 @@ std::string Chessboard::exportFen() const
         }
 
         // accumulate empty squares...
-        if (data_[i] == '0')
+        if (data_[i] == EMPTY_SQUARE)
             ++sequencyEmpty;
         // ...until a new piece is found, then write the number (if any)
         else
@@ -154,11 +145,11 @@ std::string Chessboard::exportFen() const
         }
     }
 
-// 2. export active colour
+    // 2. export active colour
     fen.push_back(' ');
     fen.push_back(turn_);
 
-// 3. export castling
+    // 3. export castling
     fen.push_back(' ');
     if ( castling_ == 0 )
         fen.push_back('-');
@@ -174,7 +165,7 @@ std::string Chessboard::exportFen() const
             fen.push_back('q');
     }
 
-// 4. export en passant
+    // 4. export en passant
     fen.push_back(' ');
 
     if ( enpassant_[0] == '-' )
@@ -185,53 +176,45 @@ std::string Chessboard::exportFen() const
         fen.push_back(enpassant_[1]);
     }
 
-// 5. export halfmove (movement count for the 50-move rule)
+    // 5. export halfmove (movement count for the 50-move rule)
     fen.push_back(' ');
     fen += std::to_string((int)halfCount_ );
-// 6. export fullmove (total # of movements)
+
+    // 6. export fullmove (total # of movements)
     fen.push_back(' ');
     fen += std::to_string((int)fullCount_);
 
     return fen;
 }
 
-float Chessboard::evaluation()
+float Chessboard::evaluation() const
 {
     float evaluation = 0;
 
     for (int i = 0; i < 64; ++i )
     {
-        if ( data_[i] == WHITE_PAWN )
-            evaluation += PAWN_WEIGHT;
-        if ( data_[i] == WHITE_ROOK )
-            evaluation += ROOK_WEIGHT;
-        if ( data_[i] == WHITE_KNIGHT )
-            evaluation += KNIGHT_WEIGHT;
-        if ( data_[i] == WHITE_BISHOP )
-            evaluation += BISHOP_WEIGHT;
-        if ( data_[i] == WHITE_QUEEN )
-            evaluation += QUEEN_WEIGHT;
-        if ( data_[i] == WHITE_KING )
-            evaluation += KING_WEIGHT;
+        switch( data_[i] )
+        {
+            case WHITE_PAWN:    evaluation += PAWN_WEIGHT;      break;
+            case WHITE_ROOK:    evaluation += ROOK_WEIGHT;      break;
+            case WHITE_KNIGHT:  evaluation += KNIGHT_WEIGHT;    break;
+            case WHITE_BISHOP:  evaluation += BISHOP_WEIGHT;    break;
+            case WHITE_QUEEN:   evaluation += QUEEN_WEIGHT;     break;
+            case WHITE_KING:    evaluation += KING_WEIGHT;      break;
 
-        if ( data_[i] == BLACK_PAWN )
-            evaluation -= PAWN_WEIGHT;
-        if ( data_[i] == BLACK_ROOK )
-            evaluation -= ROOK_WEIGHT;
-        if ( data_[i] == BLACK_KNIGHT )
-            evaluation -= KNIGHT_WEIGHT;
-        if ( data_[i] == BLACK_BISHOP )
-            evaluation -= BISHOP_WEIGHT;
-        if ( data_[i] == BLACK_QUEEN )
-            evaluation -= QUEEN_WEIGHT;
-        if ( data_[i] == BLACK_KING )
-            evaluation -= KING_WEIGHT;    
+            case BLACK_PAWN:    evaluation -= PAWN_WEIGHT;      break;
+            case BLACK_ROOK:    evaluation -= ROOK_WEIGHT;      break;
+            case BLACK_KNIGHT:  evaluation -= KNIGHT_WEIGHT;    break;
+            case BLACK_BISHOP:  evaluation -= BISHOP_WEIGHT;    break;
+            case BLACK_QUEEN:   evaluation -= QUEEN_WEIGHT;     break;
+            case BLACK_KING:    evaluation -= KING_WEIGHT;      break;
+        }
     }
 
     return evaluation;
 }
 
-void Chessboard::appendVariation(Variations& variations, int from, int to )
+void Chessboard::appendVariation(Variations& variations, int from, int to ) const
 {
     Movement movement(from, to);
 
@@ -252,10 +235,10 @@ void Chessboard::appendVariation(Variations& variations, int from, int to )
 void Chessboard::applyMovement( Movement& m )
 {
     data_[m.to().getValue()] = data_[m.from().getValue()];
-    data_[m.from().getValue()] = '0';
+    data_[m.from().getValue()] = EMPTY_SQUARE;
 }
 
-void Chessboard::findVariations( Variations& variations )
+void Chessboard::findVariations( Variations& variations ) const
 {
     for (int i = 0; i < 64; ++i )
     {
@@ -293,7 +276,7 @@ void Chessboard::findVariations( Variations& variations )
     }
 }
 
-void Chessboard::findPawnVariations(Variations& variations, int square)
+void Chessboard::findPawnVariations(Variations& variations, int square) const
 {
     int x_coord = square % 8;
     int y_coord = square / 8;
@@ -339,7 +322,7 @@ void Chessboard::findPawnVariations(Variations& variations, int square)
     }
 }
 
-bool Chessboard::validCoordinates(int x, int y)
+bool Chessboard::validCoordinates(int x, int y) const
 {
     if ( x < 0 || x > 7 || y < 0 || y > 7 )
         return false;
@@ -347,7 +330,7 @@ bool Chessboard::validCoordinates(int x, int y)
     return true;
 }
 
-void Chessboard::findKnightVariations(Variations& variations, int square )
+void Chessboard::findKnightVariations(Variations& variations, int square ) const
 {
     int x_coord = square % 8;
     int y_coord = square / 8;
@@ -404,15 +387,75 @@ void Chessboard::findKnightVariations(Variations& variations, int square )
     }
 }
 
-void Chessboard::findRookVariations(Variations& variations, int square )
+void Chessboard::findRookVariations(Variations& variations, int square ) const
 {
     int x_coord = square % 8;
     int y_coord = square / 8;
 
+    #if true
+
+    int x_target;
+    int y_target;
+
+    auto traverse = [&](auto lambda)
+    {
+        while ( validCoordinates(x_target, y_target) )
+        {
+            int target_square = y_target*8 + x_target;
+
+            if ( !isSquareOccupied( target_square ) )
+            {
+                appendVariation( variations, square, target_square );
+                lambda();
+            }
+            else
+            {
+                if ( turn_ == 'w' )
+                {
+                    if ( isSquareBlack( target_square ) )
+                        appendVariation( variations, square,target_square );
+                }
+                else if ( turn_ == 'b' )
+                {
+                    if ( isSquareWhite( target_square ) )
+                        appendVariation( variations, square, target_square );
+                }
+                break;
+            }
+        }
+    };
+    
+    auto move_up =      [&] () {--y_target;};
+    auto move_down =    [&] () {++y_target;};
+    auto move_right =   [&] () {++x_target;};
+    auto move_left =    [&] () {--x_target;};
+
+    // up
+    x_target = x_coord;
+    y_target = y_coord-1;
+    traverse(move_up);
+
+    // down
+    x_target = x_coord;
+    y_target = y_coord+1;
+    traverse(move_down);
+
+    // right
+    x_target = x_coord+1;
+    y_target = y_coord;
+    traverse(move_right);
+
+    // left
+    x_target = x_coord-1;
+    y_target = y_coord;
+    traverse(move_left);
+
+    #else
     // up
     int x_target = x_coord;
     int y_target = y_coord-1;
 
+    // FIXME can I use lambdas here?
     while ( validCoordinates(x_target, y_target) )
     {
         int target_square = y_target*8 + x_target;
@@ -525,25 +568,26 @@ void Chessboard::findRookVariations(Variations& variations, int square )
             break;
         }
     }
+    #endif
 }
 
-void Chessboard::findBishopVariations(Variations& variations, int square )
+void Chessboard::findBishopVariations(Variations& variations, int square ) const 
 {
 
 }
 
-void Chessboard::findQueenVariations(Variations& variations, int square )
+void Chessboard::findQueenVariations(Variations& variations, int square ) const
 {
     findRookVariations( variations, square );
     findBishopVariations( variations, square );
 }
 
-bool Chessboard::isSquareOccupied( int square )
+bool Chessboard::isSquareOccupied( int square ) const
 {
-    return data_[square] != '0';
+    return data_[square] != EMPTY_SQUARE;
 }
 
-bool Chessboard::isSquareWhite( int square )
+bool Chessboard::isSquareWhite( int square ) const
 {
     if ( data_[square] == WHITE_PAWN || 
          data_[square] == WHITE_ROOK || 
@@ -556,7 +600,7 @@ bool Chessboard::isSquareWhite( int square )
     return false;
 }
 
-bool Chessboard::isSquareBlack( int square )
+bool Chessboard::isSquareBlack( int square ) const
 {
     if ( data_[square] == BLACK_PAWN || 
          data_[square] == BLACK_ROOK || 
