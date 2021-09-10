@@ -573,7 +573,64 @@ void Chessboard::findRookVariations(Variations& variations, int square ) const
 
 void Chessboard::findBishopVariations(Variations& variations, int square ) const 
 {
+    int x_coord = square % 8;
+    int y_coord = square / 8;
 
+    int x_target;
+    int y_target;
+
+    auto traverse = [&](auto lambda)
+    {
+        while ( validCoordinates(x_target, y_target) )
+        {
+            int target_square = y_target*8 + x_target;
+
+            if ( !isSquareOccupied( target_square ) )
+            {
+                appendVariation( variations, square, target_square );
+                lambda();
+            }
+            else
+            {
+                if ( turn_ == 'w' )
+                {
+                    if ( isSquareBlack( target_square ) )
+                        appendVariation( variations, square,target_square );
+                }
+                else if ( turn_ == 'b' )
+                {
+                    if ( isSquareWhite( target_square ) )
+                        appendVariation( variations, square, target_square );
+                }
+                break;
+            }
+        }
+    };
+    
+    auto move_up_left    = [&] () {--y_target; --x_target;};
+    auto move_up_right   = [&] () {--y_target; ++x_target;};
+    auto move_down_left  = [&] () {++y_target; --x_target;};
+    auto move_down_right = [&] () {++y_target; ++x_target;};
+
+    // up left
+    x_target = x_coord-1;
+    y_target = y_coord-1;
+    traverse(move_up_left);
+
+    // up right
+    x_target = x_coord+1;
+    y_target = y_coord-1;
+    traverse(move_up_right);
+
+    // down left
+    x_target = x_coord-1;
+    y_target = y_coord+1;
+    traverse(move_down_left);
+
+    // left
+    x_target = x_coord+1;
+    y_target = y_coord+1;
+    traverse(move_down_right);
 }
 
 void Chessboard::findQueenVariations(Variations& variations, int square ) const
