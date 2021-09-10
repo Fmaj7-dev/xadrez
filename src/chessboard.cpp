@@ -1,5 +1,6 @@
 #include "chessboard.h"
 #include "variation.h"
+#include "log.h"
 
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
@@ -262,15 +263,15 @@ void Chessboard::findVariations( Variations& variations )
         {
             if ( data_[i] == WHITE_PAWN )
                 findPawnVariations(variations, i);
-            /*if ( data_[i] == WHITE_ROOK )
-                evaluation += ROOK_WEIGHT;*/
+            if ( data_[i] == WHITE_ROOK )
+                findRookVariations(variations, i);
             if ( data_[i] == WHITE_KNIGHT )
                 findKnightVariations(variations, i);
-            /*if ( data_[i] == WHITE_BISHOP )
-                evaluation += BISHOP_WEIGHT;
+            if ( data_[i] == WHITE_BISHOP )
+                findBishopVariations(variations, i);
             if ( data_[i] == WHITE_QUEEN )
-                evaluation += QUEEN_WEIGHT;
-            if ( data_[i] == WHITE_KING )
+                findQueenVariations(variations, i);
+            /*if ( data_[i] == WHITE_KING )
                 evaluation += KING_WEIGHT;*/
         }
 
@@ -278,15 +279,15 @@ void Chessboard::findVariations( Variations& variations )
         {
             if ( data_[i] == BLACK_PAWN )
                 findPawnVariations(variations, i);
-            /*if ( data_[i] == BLACK_ROOK )
-                evaluation -= ROOK_WEIGHT;*/
+            if ( data_[i] == BLACK_ROOK )
+                findRookVariations(variations, i);
             if ( data_[i] == BLACK_KNIGHT )
                 findKnightVariations(variations, i);
-            /*if ( data_[i] == BLACK_BISHOP )
-                evaluation -= BISHOP_WEIGHT;
+            if ( data_[i] == BLACK_BISHOP )
+                findBishopVariations(variations, i);
             if ( data_[i] == BLACK_QUEEN )
-                evaluation -= QUEEN_WEIGHT;
-            if ( data_[i] == BLACK_KING )
+                findQueenVariations(variations, i);
+            /*if ( data_[i] == BLACK_KING )
                 evaluation -= KING_WEIGHT;*/
         }
     }
@@ -294,47 +295,276 @@ void Chessboard::findVariations( Variations& variations )
 
 void Chessboard::findPawnVariations(Variations& variations, int square)
 {
+    int x_coord = square % 8;
+    int y_coord = square / 8;
+
     if ( turn_ == 'w' )
     {
         // if first movement of the pawn
         if( square >= 48 && square <= 55 )
         {
-            if ( !isSquareOccupied(square - 16) )
+            if ( !isSquareOccupied(square - 16) && !isSquareOccupied(square -8 ) )
                 appendVariation(variations, square, square - 16);
         }
         if ( !isSquareOccupied(square - 8) )
-                appendVariation(variations, square, square - 8);
+            appendVariation(variations, square, square - 8);
+
+        if (x_coord != 0)
+            if ( isSquareBlack(square-9) )
+                appendVariation(variations, square, square - 9);
+        
+        if (x_coord != 7)
+            if ( isSquareBlack(square-7) )
+                appendVariation(variations, square, square - 7);
     }
     else if (turn_ == 'b')
     {
         // if first movement of the pawn
         if( square >= 8 && square <= 15 )
         {
-            if ( !isSquareOccupied(square + 16) )
+            if ( !isSquareOccupied(square + 16) && !isSquareOccupied(square + 8))
                 appendVariation(variations, square, square + 16);
         }
+
         if ( !isSquareOccupied(square + 8) )
-                appendVariation(variations, square, square + 8);
+            appendVariation(variations, square, square + 8);
+        
+        if(x_coord != 7)
+            if ( isSquareWhite(square+9) )
+                appendVariation(variations, square, square + 9);
+
+        if (x_coord != 0)
+            if ( isSquareWhite(square+7) )
+                appendVariation(variations, square, square + 7);
     }
+}
+
+bool Chessboard::validCoordinates(int x, int y)
+{
+    if ( x < 0 || x > 7 || y < 0 || y > 7 )
+        return false;
+
+    return true;
 }
 
 void Chessboard::findKnightVariations(Variations& variations, int square )
 {
-    
+    int x_coord = square % 8;
+    int y_coord = square / 8;
+
+    int x[8];
+    int y[8];
+
+    // position 1
+    x[0] = x_coord-1;
+    y[0] = y_coord-2;
+
+    // position 2
+    x[1] = x_coord+1;
+    y[1] = y_coord-2;
+
+    // position 3
+    x[2] = x_coord-2;
+    y[2] = y_coord-1;
+
+    // position 4
+    x[3] = x_coord+2;
+    y[3] = y_coord-1;
+
+    // position 5
+    x[4] = x_coord-2;
+    y[4] = y_coord+1;
+
+    // position 6
+    x[5] = x_coord+2;
+    y[5] = y_coord+1;
+
+    // position 7
+    x[6] = x_coord-1;
+    y[6] = y_coord+2;
+
+    // position 8
+    x[7] = x_coord+1;
+    y[7] = y_coord+2;
+
+    if ( turn_ == 'w' )
+    {
+        for (int i = 0; i < 8; ++i)
+        {
+            if( validCoordinates(x[i], y[i]) && (!isSquareOccupied(square) || isSquareBlack(square)) )
+                appendVariation(variations, square, x[i] + y[i]*8);
+        }
+
+    }
+    else if (turn_ == 'b')
+    {
+        for (int i = 0; i < 8; ++i)
+            if( validCoordinates(x[i], y[i]) && (!isSquareOccupied(x[i] + y[i]*8) || isSquareWhite(x[i] + y[i]*8)) )
+                appendVariation(variations, square, x[i] + y[i]*8);
+    }
 }
 
+void Chessboard::findRookVariations(Variations& variations, int square )
+{
+    int x_coord = square % 8;
+    int y_coord = square / 8;
+
+    // up
+    int x_target = x_coord;
+    int y_target = y_coord-1;
+
+    while ( validCoordinates(x_target, y_target) )
+    {
+        int target_square = y_target*8 + x_target;
+
+        if ( !isSquareOccupied( target_square ) )
+        {
+            appendVariation( variations, square, target_square );
+            --y_target;
+        }
+        else
+        {
+            if ( turn_ == 'w' )
+            {
+                if ( isSquareBlack( target_square ) )
+                    appendVariation( variations, square,target_square );
+            }
+            else if ( turn_ == 'b' )
+            {
+                if ( isSquareWhite( target_square ) )
+                    appendVariation( variations, square, target_square );
+            }
+            break;
+        }
+    }
+
+    // down
+    x_target = x_coord;
+    y_target = y_coord+1;
+
+    while ( validCoordinates(x_target, y_target) )
+    {
+        int target_square = y_target*8 + x_target;
+
+        if ( !isSquareOccupied( target_square ) )
+        {
+            appendVariation( variations, square, target_square );
+            ++y_target;
+        }
+        else
+        {
+            if ( turn_ == 'w' )
+            {
+                if ( isSquareBlack( target_square ) )
+                    appendVariation( variations, square,target_square );
+            }
+            else if ( turn_ == 'b' )
+            {
+                if ( isSquareWhite( target_square ) )
+                    appendVariation( variations, square, target_square );
+            }
+            break;
+        }
+    }
+    
+
+    // left
+    x_target = x_coord-1;
+    y_target = y_coord;
+
+    while ( validCoordinates(x_target, y_target) )
+    {
+        int target_square = y_target*8 + x_target;
+
+        if ( !isSquareOccupied( target_square ) )
+        {
+            appendVariation( variations, square, target_square );
+            --x_target;
+        }
+        else
+        {
+            if ( turn_ == 'w' )
+            {
+                if ( isSquareBlack( target_square ) )
+                    appendVariation( variations, square,target_square );
+            }
+            else if ( turn_ == 'b' )
+            {
+                if ( isSquareWhite( target_square ) )
+                    appendVariation( variations, square, target_square );
+            }
+            break;
+        }
+    }
+
+    // right
+    x_target = x_coord+1;
+    y_target = y_coord;
+
+    while ( validCoordinates(x_target, y_target) )
+    {
+        int target_square = y_target*8 + x_target;
+
+        if ( !isSquareOccupied( target_square ) )
+        {
+            appendVariation( variations, square, target_square );
+            ++x_target;
+        }
+        else
+        {
+            if ( turn_ == 'w' )
+            {
+                if ( isSquareBlack( target_square ) )
+                    appendVariation( variations, square,target_square );
+            }
+            else if ( turn_ == 'b' )
+            {
+                if ( isSquareWhite( target_square ) )
+                    appendVariation( variations, square, target_square );
+            }
+            break;
+        }
+    }
+}
+
+void Chessboard::findBishopVariations(Variations& variations, int square )
+{
+
+}
+
+void Chessboard::findQueenVariations(Variations& variations, int square )
+{
+    findRookVariations( variations, square );
+    findBishopVariations( variations, square );
+}
 
 bool Chessboard::isSquareOccupied( int square )
 {
     return data_[square] != '0';
 }
 
-/*bool Chessboard::isSquareWhite( int square )
+bool Chessboard::isSquareWhite( int square )
 {
+    if ( data_[square] == WHITE_PAWN || 
+         data_[square] == WHITE_ROOK || 
+         data_[square] == WHITE_KNIGHT || 
+         data_[square] == WHITE_BISHOP || 
+         data_[square] == WHITE_QUEEN || 
+         data_[square] == WHITE_KING )
+         return true;
 
+    return false;
 }
 
 bool Chessboard::isSquareBlack( int square )
 {
+    if ( data_[square] == BLACK_PAWN || 
+         data_[square] == BLACK_ROOK || 
+         data_[square] == BLACK_KNIGHT || 
+         data_[square] == BLACK_BISHOP || 
+         data_[square] == BLACK_QUEEN || 
+         data_[square] == BLACK_KING )
+         return true;
 
-}*/
+    return false;
+}

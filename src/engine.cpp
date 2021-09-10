@@ -17,10 +17,24 @@ std::string Engine::findBestMove( uint32_t seconds )
     Variations v;
     chessboard_.findVariations(v);
 
-    int len = v.size();
+    float eval = 100;
+    int chosen = 0;
 
-    int randNum = rand()%(len);
-    return v[randNum].movement_.str();
+    for( size_t i = 0; i < v.size(); ++i)
+    {
+        etlog(v[i].movement_.str() + " -> " + v[i].chessboard_.exportFen());
+        float neval = v[i].chessboard_.evaluation();
+
+        if (neval < eval)
+        {
+            eval = neval;
+            chosen = i;
+        }
+    }
+
+    etlog("Best move: " + v[chosen].movement_.str()+" eval: "+std::to_string(eval));
+
+    return v[chosen].movement_.str();
 }
 
 void Engine::cancelFind()

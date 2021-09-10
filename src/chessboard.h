@@ -61,12 +61,16 @@ public:
     void findVariations(Variations& variations);
     void findPawnVariations(Variations& variations, int square);
     void findKnightVariations(Variations& variations, int square );
+    void findRookVariations(Variations& variations, int square );
+    void findBishopVariations(Variations& variations, int square );
+    void findQueenVariations(Variations& variations, int square );
 
     void applyMovement( Movement& m );
 
     bool isSquareOccupied( int square );
     bool isSquareWhite( int square );
     bool isSquareBlack( int square );
+    bool validCoordinates(int x, int y);
 
     // evaluation
     float evaluation();
