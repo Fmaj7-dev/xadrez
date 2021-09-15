@@ -20,8 +20,12 @@ std::string Engine::findBestMove( uint32_t seconds )
     float eval = 100;
     int chosen = 0;
 
+    etlog("found "+std::to_string(v.size())+" variations");
+
     for( size_t i = 0; i < v.size(); ++i)
     {
+        std::cout<<"info "+v[i].movement_.str() + " -> " + v[i].chessboard_.exportFen()<<std::endl;
+        
         etlog(v[i].movement_.str() + " -> " + v[i].chessboard_.exportFen());
         float neval = v[i].chessboard_.evaluation();
 
@@ -32,8 +36,10 @@ std::string Engine::findBestMove( uint32_t seconds )
         }
     }
 
-    etlog("Best move: " + v[chosen].movement_.str()+" eval: "+std::to_string(eval));
+    if (v.empty())
+        return "0000";
 
+    etlog("Best move: " + v[chosen].movement_.str()+" eval: "+std::to_string(eval));
     return v[chosen].movement_.str();
 }
 

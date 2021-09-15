@@ -10,7 +10,7 @@ using namespace std;
 // example
 // uci
 // isready
-// position fen rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+// position fen rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1
 
 // commands
 const string stop("stop");
@@ -24,6 +24,9 @@ const string fen("fen");
 // output strings
 const string uciok("uciok");
 const string readyok("readyok");
+
+// debugging commands
+const string init("init");
 
 UCI::UCI()
 {
@@ -94,10 +97,17 @@ int UCI::run()
             
             etlogwrite( movement );
         }
+        else if ( command[0] == init )
+        {
+            //engine_.loadFen("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1");
+            engine_.loadFen("3ppp2/3pkp2/4pp2/8/1B6/K7/8/8 b - - 0 1");
+            
+            cout<<"done"<<endl;
+        }
 
         else if ( read == exitt ||
-                read == stop ||
-                read == quit )
+                  read == stop ||
+                  read == quit )
         return 0;
     }
 }

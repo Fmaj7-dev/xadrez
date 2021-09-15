@@ -67,6 +67,9 @@ public:
     void findRookVariations(Variations& variations, int square ) const;
     void findBishopVariations(Variations& variations, int square ) const;
     void findQueenVariations(Variations& variations, int square ) const;
+    void findKingVariations(Variations& variations, int square ) const;
+    bool isKingThreatened(int square) const;
+    int findKing() const;
 
     // move
     void applyMovement( Movement& m );

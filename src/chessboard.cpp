@@ -222,14 +222,248 @@ void Chessboard::appendVariation(Variations& variations, int from, int to ) cons
     variation.chessboard_ = *this;
     variation.movement_ = movement;
 
-    if (turn_ == 'b')
-        variation.chessboard_.turn_ = 'w';
-    if (turn_ == 'w')
-        variation.chessboard_.turn_ = 'b';
-
+    // FIXME! find king first
     variation.chessboard_.applyMovement( movement );
 
-    variations.push_back( variation );
+    int kingPosition = findKing();
+
+    // only append it if the king is not threatened
+    if ( !variation.chessboard_.isKingThreatened( kingPosition ) )
+    {
+        if (turn_ == 'b')
+            variation.chessboard_.turn_ = 'w';
+        if (turn_ == 'w')
+            variation.chessboard_.turn_ = 'b';
+
+        variations.push_back( variation );
+    }
+}
+
+int Chessboard::findKing() const
+{
+    for (int i = 0; i < 64; ++i)
+    {
+        if ( turn_ == BLACK_TURN )
+            if ( data_[i] == BLACK_KING )
+                return i;
+
+        if ( turn_ == WHITE_TURN )
+            if ( data_[i] == WHITE_KING )
+                return i;
+    }
+}
+
+bool Chessboard::isKingThreatened(int square) const
+{
+    int x_coord = square % 8;
+    int y_coord = square / 8;
+
+    // threaten by knight?
+    int x[8];
+    int y[8];
+
+    // position 1
+    x[0] = x_coord-1;
+    y[0] = y_coord-2;
+
+    // position 2
+    x[1] = x_coord+1;
+    y[1] = y_coord-2;
+
+    // position 3
+    x[2] = x_coord-2;
+    y[2] = y_coord-1;
+
+    // position 4
+    x[3] = x_coord+2;
+    y[3] = y_coord-1;
+
+    // position 5
+    x[4] = x_coord-2;
+    y[4] = y_coord+1;
+
+    // position 6
+    x[5] = x_coord+2;
+    y[5] = y_coord+1;
+
+    // position 7
+    x[6] = x_coord-1;
+    y[6] = y_coord+2;
+
+    // position 8
+    x[7] = x_coord+1;
+    y[7] = y_coord+2;
+
+    if ( turn_ == 'w' )
+    {
+        for (int i = 0; i < 8; ++i)
+        {
+            if( validCoordinates(x[i], y[i]) && data_[x[i] + y[i]*8] == 'n' )
+            {
+                etlog("threatened by knight");
+                return true;
+            }
+        }
+
+    }
+    else if (turn_ == 'b')
+    {
+        for (int i = 0; i < 8; ++i)
+            if( validCoordinates(x[i], y[i]) && data_[x[i] + y[i]*8] == 'N' )
+            {
+                etlog("threatened by knight");
+                return true;
+            }
+    }
+
+    // threatened by rook or queen
+    int x_target;
+    int y_target;
+
+    auto traverse = [&](auto lambda)
+    {
+        while ( validCoordinates(x_target, y_target) )
+        {
+            int target_square = y_target*8 + x_target;
+
+            if ( !isSquareOccupied( target_square ) )
+                lambda();
+            else
+            {
+                if ( turn_ == 'w' )
+                {
+                    if ( data_[target_square] == 'r' ||  data_[target_square] == 'q')
+                        return true;
+                }
+                else if ( turn_ == 'b' )
+                {
+                    if ( data_[target_square] == 'R' ||  data_[target_square] == 'Q')
+                        return true;
+                }
+                return false;
+            }
+        }
+        return false;
+    };
+
+    auto move_up =      [&] () {--y_target;};
+    auto move_down =    [&] () {++y_target;};
+    auto move_right =   [&] () {++x_target;};
+    auto move_left =    [&] () {--x_target;};
+
+    // up
+    x_target = x_coord;
+    y_target = y_coord-1;
+    if (traverse(move_up) )
+    {
+        etlog("threatened by rook 1");
+        return true;
+    }
+
+    // down
+    x_target = x_coord;
+    y_target = y_coord+1;
+    if (traverse(move_down) )
+    {
+        etlog("threatened by rook 2");
+        return true;
+    }
+
+    // right
+    x_target = x_coord+1;
+    y_target = y_coord;
+    if (traverse(move_right) )
+    {
+        etlog("threatened by rook 3");
+        return true;
+    }
+
+    // left
+    x_target = x_coord-1;
+    y_target = y_coord;
+    if (traverse(move_left) )
+    {
+        etlog("threatened by rook 4");
+        return true;
+    }
+    
+    // threatened by bishop or queen
+    auto traverseBishopQueen = [&](auto lambda)
+    {
+        etlog("validCoordinates? "+std::to_string(x_target)+" "+std::to_string(y_target));
+        while ( validCoordinates(x_target, y_target) )
+        {
+            int target_square = y_target*8 + x_target;
+
+            if ( !isSquareOccupied( target_square ) )
+                lambda();
+            else
+            {
+                if ( turn_ == 'w' )
+                {
+                    if ( data_[target_square] == 'b' ||  data_[target_square] == 'q')
+                        return true;
+                }
+                else if ( turn_ == 'b' )
+                {
+                    if ( data_[target_square] == 'B' ||  data_[target_square] == 'Q')
+                        return true;
+                }
+                break;
+            }
+        }
+        return false;
+    };
+
+    auto move_up_left    = [&] () {--y_target; --x_target;};
+    auto move_up_right   = [&] () {--y_target; ++x_target;};
+    auto move_down_left  = [&] () {++y_target; --x_target;};
+    auto move_down_right = [&] () {++y_target; ++x_target;};
+
+    etlog("testing square "+std::to_string( square ));
+    etlog("x_coord: "+std::to_string( x_coord ));
+    etlog("y_coord: "+std::to_string( y_coord ));
+
+    // up left
+    x_target = x_coord-1;
+    y_target = y_coord-1;
+    if ( traverseBishopQueen(move_up_left) )
+    {
+        etlog("threatened by bishop");
+        return true;
+    }
+
+    // up right
+    x_target = x_coord+1;
+    y_target = y_coord-1;
+    if ( traverseBishopQueen(move_up_right) )
+    {
+        etlog("threatened by bishop");
+        return true;
+    }
+
+    // down left
+    x_target = x_coord-1;
+    y_target = y_coord+1;
+    if ( traverseBishopQueen(move_down_left) )
+    {
+        etlog("threatened by bishop");
+        return true;
+    }
+
+    // down left
+    x_target = x_coord+1;
+    y_target = y_coord+1;
+    if ( traverseBishopQueen(move_down_right) )
+    {
+        etlog("threatened by bishop");
+        return true;
+    }
+
+    // threatened by pawn
+    
+
+    return false;
 }
 
 void Chessboard::applyMovement( Movement& m )
@@ -254,24 +488,24 @@ void Chessboard::findVariations( Variations& variations ) const
                 findBishopVariations(variations, i);
             if ( data_[i] == WHITE_QUEEN )
                 findQueenVariations(variations, i);
-            /*if ( data_[i] == WHITE_KING )
-                evaluation += KING_WEIGHT;*/
+            if ( data_[i] == WHITE_KING )
+                findKingVariations(variations, i);
         }
 
         if ( turn_ == 'b' )
         {
             if ( data_[i] == BLACK_PAWN )
                 findPawnVariations(variations, i);
-            if ( data_[i] == BLACK_ROOK )
+            else if ( data_[i] == BLACK_ROOK )
                 findRookVariations(variations, i);
-            if ( data_[i] == BLACK_KNIGHT )
+            else if ( data_[i] == BLACK_KNIGHT )
                 findKnightVariations(variations, i);
-            if ( data_[i] == BLACK_BISHOP )
+            else if ( data_[i] == BLACK_BISHOP )
                 findBishopVariations(variations, i);
-            if ( data_[i] == BLACK_QUEEN )
+            else if ( data_[i] == BLACK_QUEEN )
                 findQueenVariations(variations, i);
-            /*if ( data_[i] == BLACK_KING )
-                evaluation -= KING_WEIGHT;*/
+            else if ( data_[i] == BLACK_KING )
+                findKingVariations(variations, i);
         }
     }
 }
@@ -283,7 +517,7 @@ void Chessboard::findPawnVariations(Variations& variations, int square) const
 
     if ( turn_ == 'w' )
     {
-        // if first movement of the pawn
+        // if first movement of the pawn, it can move two squares
         if( square >= 48 && square <= 55 )
         {
             if ( !isSquareOccupied(square - 16) && !isSquareOccupied(square -8 ) )
@@ -374,7 +608,7 @@ void Chessboard::findKnightVariations(Variations& variations, int square ) const
     {
         for (int i = 0; i < 8; ++i)
         {
-            if( validCoordinates(x[i], y[i]) && (!isSquareOccupied(square) || isSquareBlack(square)) )
+            if( validCoordinates(x[i], y[i]) && (!isSquareOccupied(x[i] + y[i]) || isSquareBlack(x[i] + y[i])) )
                 appendVariation(variations, square, x[i] + y[i]*8);
         }
 
@@ -391,8 +625,6 @@ void Chessboard::findRookVariations(Variations& variations, int square ) const
 {
     int x_coord = square % 8;
     int y_coord = square / 8;
-
-    #if true
 
     int x_target;
     int y_target;
@@ -449,126 +681,6 @@ void Chessboard::findRookVariations(Variations& variations, int square ) const
     x_target = x_coord-1;
     y_target = y_coord;
     traverse(move_left);
-
-    #else
-    // up
-    int x_target = x_coord;
-    int y_target = y_coord-1;
-
-    // FIXME can I use lambdas here?
-    while ( validCoordinates(x_target, y_target) )
-    {
-        int target_square = y_target*8 + x_target;
-
-        if ( !isSquareOccupied( target_square ) )
-        {
-            appendVariation( variations, square, target_square );
-            --y_target;
-        }
-        else
-        {
-            if ( turn_ == 'w' )
-            {
-                if ( isSquareBlack( target_square ) )
-                    appendVariation( variations, square,target_square );
-            }
-            else if ( turn_ == 'b' )
-            {
-                if ( isSquareWhite( target_square ) )
-                    appendVariation( variations, square, target_square );
-            }
-            break;
-        }
-    }
-
-    // down
-    x_target = x_coord;
-    y_target = y_coord+1;
-
-    while ( validCoordinates(x_target, y_target) )
-    {
-        int target_square = y_target*8 + x_target;
-
-        if ( !isSquareOccupied( target_square ) )
-        {
-            appendVariation( variations, square, target_square );
-            ++y_target;
-        }
-        else
-        {
-            if ( turn_ == 'w' )
-            {
-                if ( isSquareBlack( target_square ) )
-                    appendVariation( variations, square,target_square );
-            }
-            else if ( turn_ == 'b' )
-            {
-                if ( isSquareWhite( target_square ) )
-                    appendVariation( variations, square, target_square );
-            }
-            break;
-        }
-    }
-    
-
-    // left
-    x_target = x_coord-1;
-    y_target = y_coord;
-
-    while ( validCoordinates(x_target, y_target) )
-    {
-        int target_square = y_target*8 + x_target;
-
-        if ( !isSquareOccupied( target_square ) )
-        {
-            appendVariation( variations, square, target_square );
-            --x_target;
-        }
-        else
-        {
-            if ( turn_ == 'w' )
-            {
-                if ( isSquareBlack( target_square ) )
-                    appendVariation( variations, square,target_square );
-            }
-            else if ( turn_ == 'b' )
-            {
-                if ( isSquareWhite( target_square ) )
-                    appendVariation( variations, square, target_square );
-            }
-            break;
-        }
-    }
-
-    // right
-    x_target = x_coord+1;
-    y_target = y_coord;
-
-    while ( validCoordinates(x_target, y_target) )
-    {
-        int target_square = y_target*8 + x_target;
-
-        if ( !isSquareOccupied( target_square ) )
-        {
-            appendVariation( variations, square, target_square );
-            ++x_target;
-        }
-        else
-        {
-            if ( turn_ == 'w' )
-            {
-                if ( isSquareBlack( target_square ) )
-                    appendVariation( variations, square,target_square );
-            }
-            else if ( turn_ == 'b' )
-            {
-                if ( isSquareWhite( target_square ) )
-                    appendVariation( variations, square, target_square );
-            }
-            break;
-        }
-    }
-    #endif
 }
 
 void Chessboard::findBishopVariations(Variations& variations, int square ) const 
@@ -637,6 +749,69 @@ void Chessboard::findQueenVariations(Variations& variations, int square ) const
 {
     findRookVariations( variations, square );
     findBishopVariations( variations, square );
+}
+
+void Chessboard::findKingVariations(Variations& variations, int square ) const
+{
+    int x_coord = square % 8;
+    int y_coord = square / 8;
+
+    int x[8];
+    int y[8];
+
+    // position 0
+    x[0] = x_coord - 1;
+    y[0] = y_coord - 1;
+
+    // position 1
+    x[1] = x_coord;
+    y[1] = y_coord - 1;
+
+    // position 2
+    x[2] = x_coord + 1;
+    y[2] = y_coord - 1;
+
+    // position 3
+    x[3] = x_coord - 1;
+    y[3] = y_coord;
+
+    // position 4
+    x[4] = x_coord + 1;
+    y[4] = y_coord;
+
+    // position 5
+    x[5] = x_coord - 1;
+    y[5] = y_coord + 1;
+
+    // position 6
+    x[6] = x_coord;
+    y[6] = y_coord + 1;
+
+    // position 7
+    x[7] = x_coord + 1;
+    y[7] = y_coord + 1;
+
+    auto checkPosition = [this, &square, &variations](auto x, auto y)
+    {
+        if ( validCoordinates(x, y) )
+        {
+            int target_square = y*8 + x;
+
+            if ( turn_ == WHITE_TURN )
+            {
+                if ( isSquareBlack(target_square) || !isSquareOccupied(target_square) )
+                    appendVariation( variations, square, target_square );
+            }
+            else if ( turn_ == BLACK_TURN )
+            {
+                if ( isSquareWhite(target_square) || !isSquareOccupied(target_square) )
+                    appendVariation( variations, square, target_square );
+            }
+        }
+    };
+
+    for ( int i = 0; i < 8; ++i )
+        checkPosition( x[i], y[i] );
 }
 
 bool Chessboard::isSquareOccupied( int square ) const
