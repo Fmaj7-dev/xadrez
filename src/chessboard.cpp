@@ -225,11 +225,15 @@ void Chessboard::appendVariation(Variations& variations, int from, int to ) cons
     // FIXME! find king first
     variation.chessboard_.applyMovement( movement );
 
-    int kingPosition = findKing();
+    int kingPosition = variation.chessboard_.findKing();
+    etlog("\t what about "+variation.movement_.str());
+    etlog("king found after movement: "+std::to_string(kingPosition));
 
     // only append it if the king is not threatened
     if ( !variation.chessboard_.isKingThreatened( kingPosition ) )
     {
+        etlog("\t -> adding variation on "+std::to_string(kingPosition));
+
         if (turn_ == 'b')
             variation.chessboard_.turn_ = 'w';
         if (turn_ == 'w')
@@ -237,20 +241,28 @@ void Chessboard::appendVariation(Variations& variations, int from, int to ) cons
 
         variations.push_back( variation );
     }
+    else
+        etlog("\t -> ignoring variation cause king threatened on "+std::to_string(kingPosition));
 }
 
 int Chessboard::findKing() const
 {
-    for (int i = 0; i < 64; ++i)
-    {
-        if ( turn_ == BLACK_TURN )
+    if ( turn_ == BLACK_TURN )
+        for (int i = 0; i < 64; ++i)
+        {
             if ( data_[i] == BLACK_KING )
                 return i;
+        }
 
-        if ( turn_ == WHITE_TURN )
+    else //if ( turn_ == WHITE_TURN )
+        for (int i = 0; i < 64; ++i)
+        {
             if ( data_[i] == WHITE_KING )
                 return i;
-    }
+        }
+    
+    etlog("Error: king not found");
+    return 0;
 }
 
 bool Chessboard::isKingThreatened(int square) const
@@ -390,10 +402,10 @@ bool Chessboard::isKingThreatened(int square) const
     // threatened by bishop or queen
     auto traverseBishopQueen = [&](auto lambda)
     {
-        etlog("validCoordinates? "+std::to_string(x_target)+" "+std::to_string(y_target));
         while ( validCoordinates(x_target, y_target) )
         {
             int target_square = y_target*8 + x_target;
+            etlog("\t -> testing "+std::to_string(target_square));
 
             if ( !isSquareOccupied( target_square ) )
                 lambda();
@@ -420,16 +432,12 @@ bool Chessboard::isKingThreatened(int square) const
     auto move_down_left  = [&] () {++y_target; --x_target;};
     auto move_down_right = [&] () {++y_target; ++x_target;};
 
-    etlog("testing square "+std::to_string( square ));
-    etlog("x_coord: "+std::to_string( x_coord ));
-    etlog("y_coord: "+std::to_string( y_coord ));
-
     // up left
     x_target = x_coord-1;
     y_target = y_coord-1;
     if ( traverseBishopQueen(move_up_left) )
     {
-        etlog("threatened by bishop");
+        etlog("\t threatened by bishop");
         return true;
     }
 
@@ -438,7 +446,7 @@ bool Chessboard::isKingThreatened(int square) const
     y_target = y_coord-1;
     if ( traverseBishopQueen(move_up_right) )
     {
-        etlog("threatened by bishop");
+        etlog("\t threatened by bishop");
         return true;
     }
 
@@ -447,7 +455,7 @@ bool Chessboard::isKingThreatened(int square) const
     y_target = y_coord+1;
     if ( traverseBishopQueen(move_down_left) )
     {
-        etlog("threatened by bishop");
+        etlog("\t threatened by bishop");
         return true;
     }
 
@@ -456,7 +464,7 @@ bool Chessboard::isKingThreatened(int square) const
     y_target = y_coord+1;
     if ( traverseBishopQueen(move_down_right) )
     {
-        etlog("threatened by bishop");
+        etlog("\t threatened by bishop");
         return true;
     }
 
