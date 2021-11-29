@@ -7,10 +7,13 @@
 
 using namespace std;
 
-// example
-// uci
-// isready
-// position fen rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1
+// example commands:
+
+// > uci
+// uciok
+// > isready
+// readyok
+// > position fen rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1
 
 // commands
 const string stop("stop");
@@ -99,10 +102,9 @@ int UCI::run()
         }
         else if ( command[0] == init )
         {
-            //engine_.loadFen("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1");
-            engine_.loadFen("3ppp2/3pkp2/4pp2/8/1B6/K7/8/8 b - - 0 1");
-            
-            cout<<"done"<<endl;
+            engine_.loadFen("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1");
+            //engine_.loadFen("3ppp2/3pkp2/4pp2/8/1B6/K7/8/8 b - - 0 1");
+            //engine_.loadFen("3ppp2/4kp2/3ppp2/8/1B6/K7/8/ w KQk - 0 1");
         }
 
         else if ( read == exitt ||

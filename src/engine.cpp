@@ -24,10 +24,34 @@ std::string Engine::findBestMove( uint32_t seconds )
 
     for( size_t i = 0; i < v.size(); ++i)
     {
-        std::cout<<"info "+v[i].movement_.str() + " -> " + v[i].chessboard_.exportFen()<<std::endl;
-        
         etlog(v[i].movement_.str() + " -> " + v[i].chessboard_.exportFen());
         float neval = v[i].chessboard_.evaluation();
+
+        // second level variations
+        #if 0
+        {
+            Variations v2;
+            v[i].chessboard_.findVariations(v2);
+
+            for ( size_t j = 0; j < v2.size(); ++j )
+            {
+                etlog("\t"+v2[j].movement_.str() + " -> " + v2[j].chessboard_.exportFen());
+
+                    // third level variations
+                    #if 1
+                    {
+                        Variations v3;
+                        v2[j].chessboard_.findVariations(v3);
+
+                        for ( size_t k = 0; k < v3.size(); ++k )
+                        {
+                            etlog("\t\t"+v3[k].movement_.str() + " -> " + v3[k].chessboard_.exportFen());
+                        }
+                    }
+                    #endif
+            }
+        }
+        #endif
 
         if (neval < eval)
         {

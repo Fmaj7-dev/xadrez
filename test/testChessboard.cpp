@@ -64,4 +64,21 @@ TEST_CASE("variations")
     {
         etlog(v[i].movement_.str() + " -> " + v[i].chessboard_.exportFen());
     }
+
+    REQUIRE( v.size() == 20 );
+
+    // test king threatened filter
+    Variations v2;
+    cb.importFen("3ppp2/3pkp2/4pp2/8/1B6/K7/8/8 b - - 0 1");
+    cb.findVariations(v2);
+
+    REQUIRE( v2.size() == 1 );
+
+    // test king threatened filter2
+    Variations v3;
+    cb.importFen("3ppp2/3pkp2/3p1b2/8/8/4R3/4K3/8 b - - 0 1");
+    cb.findVariations(v3);
+
+    REQUIRE( v3.size() == 1 );
+
 }

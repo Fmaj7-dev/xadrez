@@ -222,18 +222,13 @@ void Chessboard::appendVariation(Variations& variations, int from, int to ) cons
     variation.chessboard_ = *this;
     variation.movement_ = movement;
 
-    // FIXME! find king first
     variation.chessboard_.applyMovement( movement );
 
     int kingPosition = variation.chessboard_.findKing();
-    etlog("\t what about "+variation.movement_.str());
-    etlog("king found after movement: "+std::to_string(kingPosition));
 
     // only append it if the king is not threatened
     if ( !variation.chessboard_.isKingThreatened( kingPosition ) )
     {
-        etlog("\t -> adding variation on "+std::to_string(kingPosition));
-
         if (turn_ == 'b')
             variation.chessboard_.turn_ = 'w';
         if (turn_ == 'w')
@@ -241,8 +236,6 @@ void Chessboard::appendVariation(Variations& variations, int from, int to ) cons
 
         variations.push_back( variation );
     }
-    else
-        etlog("\t -> ignoring variation cause king threatened on "+std::to_string(kingPosition));
 }
 
 int Chessboard::findKing() const
@@ -311,10 +304,7 @@ bool Chessboard::isKingThreatened(int square) const
         for (int i = 0; i < 8; ++i)
         {
             if( validCoordinates(x[i], y[i]) && data_[x[i] + y[i]*8] == 'n' )
-            {
-                etlog("threatened by knight");
                 return true;
-            }
         }
 
     }
@@ -322,10 +312,7 @@ bool Chessboard::isKingThreatened(int square) const
     {
         for (int i = 0; i < 8; ++i)
             if( validCoordinates(x[i], y[i]) && data_[x[i] + y[i]*8] == 'N' )
-            {
-                etlog("threatened by knight");
                 return true;
-            }
     }
 
     // threatened by rook or queen
@@ -367,37 +354,25 @@ bool Chessboard::isKingThreatened(int square) const
     x_target = x_coord;
     y_target = y_coord-1;
     if (traverse(move_up) )
-    {
-        etlog("threatened by rook 1");
         return true;
-    }
 
     // down
     x_target = x_coord;
     y_target = y_coord+1;
     if (traverse(move_down) )
-    {
-        etlog("threatened by rook 2");
         return true;
-    }
 
     // right
     x_target = x_coord+1;
     y_target = y_coord;
     if (traverse(move_right) )
-    {
-        etlog("threatened by rook 3");
         return true;
-    }
 
     // left
     x_target = x_coord-1;
     y_target = y_coord;
     if (traverse(move_left) )
-    {
-        etlog("threatened by rook 4");
         return true;
-    }
     
     // threatened by bishop or queen
     auto traverseBishopQueen = [&](auto lambda)
@@ -405,7 +380,6 @@ bool Chessboard::isKingThreatened(int square) const
         while ( validCoordinates(x_target, y_target) )
         {
             int target_square = y_target*8 + x_target;
-            etlog("\t -> testing "+std::to_string(target_square));
 
             if ( !isSquareOccupied( target_square ) )
                 lambda();
@@ -436,40 +410,27 @@ bool Chessboard::isKingThreatened(int square) const
     x_target = x_coord-1;
     y_target = y_coord-1;
     if ( traverseBishopQueen(move_up_left) )
-    {
-        etlog("\t threatened by bishop");
         return true;
-    }
 
     // up right
     x_target = x_coord+1;
     y_target = y_coord-1;
     if ( traverseBishopQueen(move_up_right) )
-    {
-        etlog("\t threatened by bishop");
         return true;
-    }
 
     // down left
     x_target = x_coord-1;
     y_target = y_coord+1;
     if ( traverseBishopQueen(move_down_left) )
-    {
-        etlog("\t threatened by bishop");
         return true;
-    }
 
     // down left
     x_target = x_coord+1;
     y_target = y_coord+1;
     if ( traverseBishopQueen(move_down_right) )
-    {
-        etlog("\t threatened by bishop");
         return true;
-    }
 
-    // threatened by pawn
-    
+    // threatened by pawn FIXME
 
     return false;
 }
@@ -478,6 +439,8 @@ void Chessboard::applyMovement( Movement& m )
 {
     data_[m.to().getValue()] = data_[m.from().getValue()];
     data_[m.from().getValue()] = EMPTY_SQUARE;
+
+    ++fullCount_;
 }
 
 void Chessboard::findVariations( Variations& variations ) const
@@ -534,10 +497,12 @@ void Chessboard::findPawnVariations(Variations& variations, int square) const
         if ( !isSquareOccupied(square - 8) )
             appendVariation(variations, square, square - 8);
 
+        // capture left
         if (x_coord != 0)
             if ( isSquareBlack(square-9) )
                 appendVariation(variations, square, square - 9);
         
+        // capture right
         if (x_coord != 7)
             if ( isSquareBlack(square-7) )
                 appendVariation(variations, square, square - 7);
@@ -616,7 +581,7 @@ void Chessboard::findKnightVariations(Variations& variations, int square ) const
     {
         for (int i = 0; i < 8; ++i)
         {
-            if( validCoordinates(x[i], y[i]) && (!isSquareOccupied(x[i] + y[i]) || isSquareBlack(x[i] + y[i])) )
+            if( validCoordinates(x[i], y[i]) && (!isSquareOccupied(x[i] + y[i]*8) || isSquareBlack(x[i] + y[i]*8)) )
                 appendVariation(variations, square, x[i] + y[i]*8);
         }
 

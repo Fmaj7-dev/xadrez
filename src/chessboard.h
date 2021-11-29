@@ -60,8 +60,13 @@ public:
     std::string exportFen() const;
 
     // variations
-    void appendVariation(Variations& variations, int from, int to ) const;
     void findVariations(Variations& variations) const;
+
+    // evaluation
+    float evaluation() const;
+
+private:
+    void appendVariation(Variations& variations, int from, int to ) const;
     void findPawnVariations(Variations& variations, int square) const;
     void findKnightVariations(Variations& variations, int square ) const;
     void findRookVariations(Variations& variations, int square ) const;
@@ -80,9 +85,6 @@ public:
     bool isSquareBlack( int square ) const;
     bool validCoordinates(int x, int y) const;
 
-    // evaluation
-    float evaluation() const;
-
 private:
     // 64 squares of the board starting top-left
     uint8_t data_[64];
@@ -93,7 +95,7 @@ private:
     // castling flags, only four least significant bits used: KQkq
     char castling_;
 
-    // en passe square if any
+    // en passant square if any
     char enpassant_[2];
 
     // 50-movement rule counter
