@@ -85,7 +85,7 @@ int UCI::run()
         {
             cout << readyok << endl;
 
-            etlogwrite( readyok );
+            etlogwrite( "\n" + readyok );
         }
         else if (command[0] == position && command[1] == fen)
         {

@@ -19,6 +19,7 @@ if(Boost_FOUND)
                 testChessboard.cpp
                 testPosition.cpp
                 testMovement.cpp
+                testPerformance.cpp
                 )
 endif()
 
@@ -28,4 +29,4 @@ install(TARGETS check DESTINATION build)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../src )
 
 #target_compile_options(check PRIVATE -Wall -Wextra -pedantic -Werror -std=c++17 -Wc++11-extensions)
-target_compile_options(check PRIVATE -std=c++17 -Wc++11-extensions)
+target_compile_options(check PRIVATE -std=c++17 -Wc++11-extensions -O0 -g3)

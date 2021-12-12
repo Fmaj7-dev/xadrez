@@ -1,0 +1,19 @@
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+check is a Catch v2.9.2 host application.
+Run with -? for options
+
+-------------------------------------------------------------------------------
+Test Performance
+-------------------------------------------------------------------------------
+/Users/enrique/projects/xadrez/test/testPerformance.cpp:8
+...............................................................................
+
+/Users/enrique/projects/xadrez/test/testPerformance.cpp:8: FAILED:
+due to a fatal error condition:
+  SIGINT - Terminal interrupt signal
+
+===============================================================================
+test cases:  7 |  6 passed | 1 failed
+assertions: 29 | 28 passed | 1 failed
+

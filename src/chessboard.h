@@ -8,9 +8,32 @@
 class Variation;
 typedef std::vector<Variation> Variations;
 
+/*  
+    Chessboard numbered positions:                  Algebraic positions:
+
+    +----+----+----+----+----+----+----+----+       +----+----+----+----+----+----+----+----+
+    | 0  | 1  | 2  | 3  | 4  | 5  | 6  |  7 |       | a8 | b8 | c8 | d8 | e8 | f8 | g8 | h8 |
+    +----+----+----+----+----+----+----+----+       +----+----+----+----+----+----+----+----+
+    | 8  | 9  | 10 | 11 | 12 | 13 | 14 | 15 |       | a7 | b7 | c7 | d7 | e7 | f7 | g7 | h7 |
+    +----+----+----+----+----+----+----+----+       +----+----+----+----+----+----+----+----+
+    | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 |       | a6 | b6 | c6 | d6 | e6 | f6 | g6 | h6 |
+    +----+----+----+----+----+----+----+----+       +----+----+----+----+----+----+----+----+
+    | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 |       | a5 | b5 | c5 | d5 | e5 | f5 | g5 | h5 |
+    +----+----+----+----+----+----+----+----+       +----+----+----+----+----+----+----+----+
+    | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 |       | a4 | b4 | c4 | d4 | e4 | f4 | g4 | h4 |
+    +----+----+----+----+----+----+----+----+       +----+----+----+----+----+----+----+----+
+    | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47 |       | a3 | b3 | c3 | d3 | e3 | f3 | g3 | h3 |
+    +----+----+----+----+----+----+----+----+       +----+----+----+----+----+----+----+----+
+    | 48 | 49 | 50 | 51 | 52 | 53 | 54 | 55 |       | a2 | b2 | c2 | d2 | e2 | f2 | g2 | h2 |
+    +----+----+----+----+----+----+----+----+       +----+----+----+----+----+----+----+----+
+    | 56 | 57 | 58 | 59 | 60 | 61 | 62 | 63 |       | a1 | b1 | c1 | d1 | e1 | f1 | g1 | h1 |
+    +----+----+----+----+----+----+----+----+       +----+----+----+----+----+----+----+----+
+
+*/
+
 class Chessboard
 {
-    enum class PLAYER 
+    enum class Player 
     {
         WHITE,
         BLACK
@@ -66,7 +89,10 @@ public:
     float evaluation() const;
 
 private:
-    void appendVariation(Variations& variations, int from, int to ) const;
+    void reset();
+
+    void appendVariation(Variations& variations, int from, int to, Movement::Type type = Movement::Type::Normal, char promotion = 0 ) const;
+    void appendPromotion(Variations& variations, int from, int to, Player player) const;
     void findPawnVariations(Variations& variations, int square) const;
     void findKnightVariations(Variations& variations, int square ) const;
     void findRookVariations(Variations& variations, int square ) const;
@@ -84,6 +110,8 @@ private:
     bool isSquareWhite( int square ) const;
     bool isSquareBlack( int square ) const;
     bool validCoordinates(int x, int y) const;
+
+    int getEnPassantSquare() const;
 
 private:
     // 64 squares of the board starting top-left

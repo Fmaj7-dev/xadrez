@@ -7,8 +7,6 @@
 
 Chessboard::Chessboard()
 {
-    enpassant_[0] = 0;
-    enpassant_[1] = 0;
 }
 
 const Chessboard& Chessboard::operator=(const Chessboard& rhs)
@@ -53,8 +51,21 @@ bool isSpace(char c)
     return c == ' ';
 }
 
+void Chessboard::reset()
+{
+    std::fill(std::begin(data_), std::end(data_), 0);
+    turn_ = 0;
+    castling_ = 0;
+    enpassant_[0] = 0;
+    enpassant_[1] = 0;
+    halfCount_ = 0;
+    fullCount_ = 0;
+}
+
 void Chessboard::importFen(const std::string& fen)
 {
+    reset();
+
     std::vector<std::string> fen_strings;
     boost::split(fen_strings, fen, boost::is_any_of("\t "));
 
@@ -145,6 +156,10 @@ std::string Chessboard::exportFen() const
         }
     }
 
+    // remaining empty squares
+    if (sequencyEmpty != 0)
+        fen.push_back(sequencyEmpty + '0');
+
     // 2. export active colour
     fen.push_back(' ');
     fen.push_back(turn_);
@@ -214,14 +229,32 @@ float Chessboard::evaluation() const
     return evaluation;
 }
 
-void Chessboard::appendVariation(Variations& variations, int from, int to ) const
+void Chessboard::appendPromotion(Variations& variations, int from, int to, Player player) const
 {
-    Movement movement(from, to);
+    if ( player == Player::WHITE )
+    {
+        appendVariation( variations, from, to, Movement::Type::Promotion, WHITE_QUEEN );
+        appendVariation( variations, from, to, Movement::Type::Promotion, WHITE_ROOK );
+        appendVariation( variations, from, to, Movement::Type::Promotion, WHITE_BISHOP );
+        appendVariation( variations, from, to, Movement::Type::Promotion, WHITE_KNIGHT );
+    }
+    else
+    {
+        appendVariation( variations, from, to, Movement::Type::Promotion, BLACK_QUEEN );
+        appendVariation( variations, from, to, Movement::Type::Promotion, BLACK_ROOK );
+        appendVariation( variations, from, to, Movement::Type::Promotion, BLACK_BISHOP );
+        appendVariation( variations, from, to, Movement::Type::Promotion, BLACK_KNIGHT );
+    }
+}
+void Chessboard::appendVariation(Variations& variations, int from, int to, Movement::Type type, char promotion) const
+{
+    Movement movement(from, to, type, promotion);
 
     Variation variation;
     variation.chessboard_ = *this;
     variation.movement_ = movement;
 
+    int deletekingPosition = variation.chessboard_.findKing();
     variation.chessboard_.applyMovement( movement );
 
     int kingPosition = variation.chessboard_.findKing();
@@ -431,13 +464,50 @@ bool Chessboard::isKingThreatened(int square) const
         return true;
 
     // threatened by pawn FIXME
+    if ( turn_ == 'w' )
+    {
+        if ( validCoordinates(x_coord-1, y_coord-1) && data_[x_coord-1 + (y_coord-1)*8] == 'p' )
+            return true;
+        if ( validCoordinates(x_coord+1, y_coord-1) && data_[x_coord+1 + (y_coord-1)*8] == 'p' )
+            return true;
+    }
+    else if ( turn_ == 'b' )
+    {
+        if ( validCoordinates(x_coord-1, y_coord+1) && data_[x_coord-1 + (y_coord+1)*8] == 'P' )
+            return true;
+        if ( validCoordinates(x_coord+1, y_coord+1) && data_[x_coord+1 + (y_coord+1)*8] == 'P' )
+            return true;
+    }
 
     return false;
 }
 
 void Chessboard::applyMovement( Movement& m )
 {
-    data_[m.to().getValue()] = data_[m.from().getValue()];
+    if (m.type() == Movement::Type::Normal)
+        data_[m.to().getValue()] = data_[m.from().getValue()];
+    else if (m.type() == Movement::Type::Promotion)
+        data_[m.to().getValue()] = m.info();
+    else if (m.type() == Movement::Type::DoublePawnStep)
+    {
+        data_[m.to().getValue()] = data_[m.from().getValue()];
+        std::string to = m.to().getStr();
+
+        enpassant_[0] = to[0];
+
+        if (turn_ == BLACK_TURN)
+            enpassant_[1] = to[1] + 1;
+        if (turn_ == WHITE_TURN)
+            enpassant_[1] = to[1] - 1;
+
+        //std::cout<<"enpassant to: "<<to<<" "<<enpassant_<<std::endl;
+    }
+
+    if (m.type() != Movement::Type::DoublePawnStep)
+    {
+        enpassant_[0] = '-';
+    }
+
     data_[m.from().getValue()] = EMPTY_SQUARE;
 
     ++fullCount_;
@@ -481,6 +551,11 @@ void Chessboard::findVariations( Variations& variations ) const
     }
 }
 
+int Chessboard::getEnPassantSquare() const
+{
+    return Position::char2int(enpassant_);
+}
+
 void Chessboard::findPawnVariations(Variations& variations, int square) const
 {
     int x_coord = square % 8;
@@ -488,44 +563,105 @@ void Chessboard::findPawnVariations(Variations& variations, int square) const
 
     if ( turn_ == 'w' )
     {
-        // if first movement of the pawn, it can move two squares
+        // if enpassant is an option
+        if ( enpassant_[0] != '-' )
+        {
+            int enpassant_square = Position::char2int(enpassant_);
+            if (square - 9 == enpassant_square || square - 7 == enpassant_square)
+                appendVariation(variations, square, enpassant_square);
+        }
+
+        // is it on a promoting rank? 
+        bool promotingRank = false;
+        if (square >= 8 && square <= 15)
+            promotingRank = true;
+
+        // default movement: one square
+        if ( !isSquareOccupied(square - 8) && !promotingRank )
+            appendVariation(variations, square, square - 8);
+
+        // if first movement of the pawn, it could also move two squares
         if( square >= 48 && square <= 55 )
         {
             if ( !isSquareOccupied(square - 16) && !isSquareOccupied(square -8 ) )
-                appendVariation(variations, square, square - 16);
+                appendVariation(variations, square, square - 16, Movement::Type::DoublePawnStep);
         }
-        if ( !isSquareOccupied(square - 8) )
-            appendVariation(variations, square, square - 8);
 
         // capture left
         if (x_coord != 0)
             if ( isSquareBlack(square-9) )
-                appendVariation(variations, square, square - 9);
+            {
+                if (!promotingRank)
+                    appendVariation(variations, square, square - 9);
+                else
+                    appendPromotion(variations, square, square - 9, Player::WHITE);
+            }
         
         // capture right
         if (x_coord != 7)
             if ( isSquareBlack(square-7) )
-                appendVariation(variations, square, square - 7);
+            {
+                if (!promotingRank)
+                    appendVariation(variations, square, square - 7);
+                else
+                    appendPromotion(variations, square, square - 7, Player::WHITE);
+            }
+
+        // last step to final rank
+        if ( promotingRank )
+            if ( !isSquareOccupied(square - 8))
+                appendPromotion(variations, square, square - 8, Player::WHITE);
     }
     else if (turn_ == 'b')
     {
-        // if first movement of the pawn
+        // if enpassant is an option
+        if ( enpassant_[0] != '-' )
+        {
+            int enpassant_square = Position::char2int(enpassant_);
+            if (square + 9 == enpassant_square || square + 7 == enpassant_square)
+                appendVariation(variations, square, enpassant_square);
+        }
+
+        // is it on a promoting rank?
+        bool promotingRank = false;
+        if (square >= 48 && square <= 55)
+            promotingRank = true;
+
+        // default movement: one square
+        if ( !isSquareOccupied(square + 8) && !promotingRank )
+            appendVariation(variations, square, square + 8);
+
+        // if first movement of the pawn, it could also move two squares
         if( square >= 8 && square <= 15 )
         {
             if ( !isSquareOccupied(square + 16) && !isSquareOccupied(square + 8))
-                appendVariation(variations, square, square + 16);
+                appendVariation(variations, square, square + 16, Movement::Type::DoublePawnStep);
         }
-
-        if ( !isSquareOccupied(square + 8) )
-            appendVariation(variations, square, square + 8);
         
+        // capture left
         if(x_coord != 7)
             if ( isSquareWhite(square+9) )
-                appendVariation(variations, square, square + 9);
+            {
+                if (!promotingRank)
+                    appendVariation(variations, square, square + 9);
+                else
+                    appendPromotion(variations, square, square + 9, Player::BLACK);
+            }
 
+        // capture right
         if (x_coord != 0)
             if ( isSquareWhite(square+7) )
-                appendVariation(variations, square, square + 7);
+            {
+                if (!promotingRank)
+                    appendVariation(variations, square, square + 7);
+                else
+                    appendPromotion(variations, square, square + 7, Player::BLACK);
+            }
+
+        // last step to final rank
+        if ( promotingRank )
+            if ( !isSquareOccupied(square + 8))
+                appendPromotion(variations, square, square + 8, Player::BLACK);
     }
 }
 
@@ -785,6 +921,34 @@ void Chessboard::findKingVariations(Variations& variations, int square ) const
 
     for ( int i = 0; i < 8; ++i )
         checkPosition( x[i], y[i] );
+
+    // castling
+    if ( turn_ == WHITE_TURN )
+    {
+        if ( castling_ & static_cast<uint8_t>(CASTLING::WHITE_KING))
+        {
+            if ( !isSquareOccupied(61) && !isSquareOccupied(62) )
+                appendVariation( variations, 60, 62 );
+        }
+        if ( castling_ & static_cast<uint8_t>(CASTLING::WHITE_QUEEN))
+        {
+            if ( !isSquareOccupied(57) && !isSquareOccupied(58) && !isSquareOccupied(59) )
+                appendVariation( variations, 60, 58 );
+        }
+    }
+    else
+    {
+        if (castling_ & static_cast<uint8_t>(CASTLING::BLACK_KING) )
+        {
+            if ( !isSquareOccupied(5) && !isSquareOccupied(6) )
+                appendVariation( variations, 4, 6 );
+        }
+        if (castling_ & static_cast<uint8_t>(CASTLING::BLACK_QUEEN) )
+        {
+            if ( !isSquareOccupied(1) && !isSquareOccupied(2) && !isSquareOccupied(3) )
+                appendVariation( variations, 4, 2 );
+        }
+   } 
 }
 
 bool Chessboard::isSquareOccupied( int square ) const

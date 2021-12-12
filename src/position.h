@@ -7,8 +7,11 @@ class Position
 {
 public:
     Position(uint8_t pos);
-    std::string str();
+    //Position(char algebraic[]);
 
+    static uint8_t char2int(const char* pos);
+
+    std::string getStr() const;
     uint8_t getValue() const;
 
 private:
