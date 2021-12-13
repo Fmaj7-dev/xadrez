@@ -484,28 +484,30 @@ bool Chessboard::isKingThreatened(int square) const
 
 void Chessboard::applyMovement( Movement& m )
 {
-    if (m.type() == Movement::Type::Normal)
-        data_[m.to().getValue()] = data_[m.from().getValue()];
-    else if (m.type() == Movement::Type::Promotion)
-        data_[m.to().getValue()] = m.info();
-    else if (m.type() == Movement::Type::DoublePawnStep)
+    if ( m.type() == Movement::Type::Normal )
+        data_[ m.to().getValue() ] = data_[ m.from().getValue() ];
+    else if ( m.type() == Movement::Type::Promotion )
+        data_[ m.to().getValue() ] = m.info();
+    else if ( m.type() == Movement::Type::DoublePawnStep )
     {
-        data_[m.to().getValue()] = data_[m.from().getValue()];
+        data_[ m.to().getValue() ] = data_[ m.from().getValue() ];
         std::string to = m.to().getStr();
 
         enpassant_[0] = to[0];
 
-        if (turn_ == BLACK_TURN)
+        if ( turn_ == BLACK_TURN )
             enpassant_[1] = to[1] + 1;
-        if (turn_ == WHITE_TURN)
+        if ( turn_ == WHITE_TURN )
             enpassant_[1] = to[1] - 1;
 
-        //std::cout<<"enpassant to: "<<to<<" "<<enpassant_<<std::endl;
+        //std::cout<<"adding enpassant "<<enpassant_<<std::endl;
     }
 
-    if (m.type() != Movement::Type::DoublePawnStep)
+    if ( m.type() != Movement::Type::DoublePawnStep )
     {
+        //std::cout<<"removing enpassant "<<std::endl;
         enpassant_[0] = '-';
+        enpassant_[1] = 0;
     }
 
     data_[m.from().getValue()] = EMPTY_SQUARE;
@@ -567,8 +569,11 @@ void Chessboard::findPawnVariations(Variations& variations, int square) const
         if ( enpassant_[0] != '-' )
         {
             int enpassant_square = Position::char2int(enpassant_);
-            if (square - 9 == enpassant_square || square - 7 == enpassant_square)
+            if ( (x_coord > 0 && square - 9 == enpassant_square) || 
+                 (x_coord < 7 && square - 7 == enpassant_square) )
+            {
                 appendVariation(variations, square, enpassant_square);
+            }
         }
 
         // is it on a promoting rank? 
@@ -618,7 +623,8 @@ void Chessboard::findPawnVariations(Variations& variations, int square) const
         if ( enpassant_[0] != '-' )
         {
             int enpassant_square = Position::char2int(enpassant_);
-            if (square + 9 == enpassant_square || square + 7 == enpassant_square)
+            if ( (x_coord < 7 && square + 9 == enpassant_square ) || 
+                 (x_coord > 0 && square + 7 == enpassant_square) )
                 appendVariation(variations, square, enpassant_square);
         }
 

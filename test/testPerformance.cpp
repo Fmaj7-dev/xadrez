@@ -17,6 +17,8 @@ TEST_CASE("Test Performance")
 
     unsigned int numVariations = 0;
 
+    //printVariations(v);
+
     for( size_t i = 0; i < v.size(); ++i)
     {
         //numVariations++;
@@ -53,7 +55,17 @@ TEST_CASE("Test Performance")
 
                                     for ( size_t m = 0; m < v5.size(); ++m )
                                     {
-                                        numVariations++;
+                                        //numVariations++;
+                                        // sixth level
+                                        {
+                                            Variations v6;
+                                            v5[m].chessboard_.findVariations(v6);
+
+                                            for ( size_t n = 0; n < v6.size(); ++n )
+                                            {
+                                                numVariations++;
+                                            }
+                                        }
                                     }
                                 }
                             }
