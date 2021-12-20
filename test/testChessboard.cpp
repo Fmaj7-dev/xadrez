@@ -87,6 +87,7 @@ TEST_CASE("variations")
     Variations v4;
     cb.importFen("1k6/7P/8/8/6p1/6P1/4q1PK/4r3 w - - 0 1");
     cb.findVariations(v4);
+    printVariations(v4);
     REQUIRE( v4.size() == 4 );
 
     // test black promotion
@@ -142,7 +143,7 @@ TEST_CASE("movements")
         std::string before = cb.exportFen();
         Movement m(52, 44);
         Chessboard::Piece piece = cb.makeMove(m);
-        cb.undoMove(m, piece);
+        cb.undoMove();
         std::string after = cb.exportFen();
 
         REQUIRE( before == after );
@@ -153,7 +154,7 @@ TEST_CASE("movements")
         std::string before = cb.exportFen();
         Movement m(52, 36, Movement::Type::DoublePawnStep);
         Chessboard::Piece piece = cb.makeMove(m);
-        cb.undoMove(m, piece);
+        cb.undoMove();
         std::string after = cb.exportFen();
 
         REQUIRE( before == after );

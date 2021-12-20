@@ -15,7 +15,7 @@ public:
 //private:
     Movement movement_;
 
-    Chessboard chessboard_;
+    //Chessboard chessboard_;
 };
 
 typedef std::vector<Variation> Variations;
@@ -23,6 +23,6 @@ typedef std::vector<Variation> Variations;
 static void printVariations(const Variations& variations)
 {
     for (const Variation& variation : variations)
-        std::cout<<variation.movement_.str() << " -> " << variation.chessboard_.exportFen() << std::endl;
+        std::cout<<variation.movement_.str() << /*" -> " << variation.chessboard_.exportFen() << */ std::endl;
 }
 #endif

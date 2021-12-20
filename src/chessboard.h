@@ -96,7 +96,7 @@ public:
 
     // move
     Piece makeMove( Movement& m );
-    void undoMove( Movement& m, Piece captured );
+    void undoMove( /*Movement& m, Piece captured*/ );
 
 private:
     void reset();
@@ -120,6 +120,8 @@ private:
 
     int getEnPassantSquare() const;
 
+    void switchTurn();
+
 private:
     // 64 squares of the board starting top-left
     uint8_t data_[64];
@@ -127,7 +129,7 @@ private:
     // past positions
     std::vector< std::string > pastPositions_;
 
-    // 'b' or 'w'
+    // BLACK_TURN or WHITE_TURN
     char turn_;
 
     // castling flags, only four least significant bits used: KQkq

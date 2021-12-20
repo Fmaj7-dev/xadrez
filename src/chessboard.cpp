@@ -251,22 +251,19 @@ void Chessboard::appendVariation(Variations& variations, int from, int to, Movem
     Movement movement(from, to, type, promotion);
 
     Variation variation;
-    variation.chessboard_ = *this;
+    Chessboard vchessboard_ = *this;
     variation.movement_ = movement;
 
-    int deletekingPosition = variation.chessboard_.findKing();
-    variation.chessboard_.makeMove( movement );
+    vchessboard_.makeMove( movement );
 
-    int kingPosition = variation.chessboard_.findKing();
+    // undo the switch makeMove did, so that we can really test if the king is threatened
+    vchessboard_.switchTurn();
+
+    int kingPosition = vchessboard_.findKing();
 
     // only append it if the king is not threatened
-    if ( !variation.chessboard_.isKingThreatened( kingPosition ) )
+    if ( !vchessboard_.isKingThreatened( kingPosition ) )
     {
-        if (turn_ == 'b')
-            variation.chessboard_.turn_ = 'w';
-        if (turn_ == 'w')
-            variation.chessboard_.turn_ = 'b';
-
         variations.push_back( variation );
     }
 }
@@ -526,8 +523,18 @@ Chessboard::Piece Chessboard::makeMove( Movement& m )
 
     data_[m.from().getValue()] = EMPTY_SQUARE;
 
+    switchTurn();
+    
     ++fullCount_;
     return piece;
+}
+
+void Chessboard::switchTurn()
+{
+    if (turn_ == BLACK_TURN)
+        turn_ = WHITE_TURN;
+    else if (turn_ == WHITE_TURN)
+        turn_ = BLACK_TURN;
 }
 
 /**
@@ -536,7 +543,7 @@ Chessboard::Piece Chessboard::makeMove( Movement& m )
  * the first one is lost. So an array would be needed...
  * I decided to use a vector.
  */
-void Chessboard::undoMove( Movement& m, Piece piece )
+void Chessboard::undoMove( /*Movement& m, Piece piece*/ )
 {
     importFen( pastPositions_.back() );
     pastPositions_.pop_back();
