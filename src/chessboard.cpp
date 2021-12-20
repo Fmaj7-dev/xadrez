@@ -255,7 +255,7 @@ void Chessboard::appendVariation(Variations& variations, int from, int to, Movem
     variation.movement_ = movement;
 
     int deletekingPosition = variation.chessboard_.findKing();
-    variation.chessboard_.applyMovement( movement );
+    variation.chessboard_.makeMove( movement );
 
     int kingPosition = variation.chessboard_.findKing();
 
@@ -482,15 +482,78 @@ bool Chessboard::isKingThreatened(int square) const
     return false;
 }
 
-void Chessboard::applyMovement( Movement& m )
+Chessboard::Piece Chessboard::makeMove( Movement& m )
 {
+    pastPositions_.push_back( exportFen() );
+    Piece piece = EMPTY_SQUARE;
+
+    // Normal move: piece move, piece capture, advanced pawn
     if ( m.type() == Movement::Type::Normal )
+    {
+        // return captured piece or EMPTY_SQUARE if movement normal
+        piece = data_[m.to().getValue()];
         data_[ m.to().getValue() ] = data_[ m.from().getValue() ];
+    }
+
+    // pawn promotion
     else if ( m.type() == Movement::Type::Promotion )
+    {
+        // return captured piece or EMPTY_SQUARE if movement promotion
+        piece = data_[m.to().getValue()];
         data_[ m.to().getValue() ] = m.info();
+    }
+
+    // initial pawn move of two squares
     else if ( m.type() == Movement::Type::DoublePawnStep )
     {
         data_[ m.to().getValue() ] = data_[ m.from().getValue() ];
+        std::string to = m.to().getStr();
+
+        // set en passant values, if pawn moved two squares
+        enpassant_[0] = to[0];
+        if ( turn_ == BLACK_TURN )
+            enpassant_[1] = to[1] + 1;
+        if ( turn_ == WHITE_TURN )
+            enpassant_[1] = to[1] - 1;
+    }
+
+    // reset en passant values, if not double move of pawn
+    if ( m.type() != Movement::Type::DoublePawnStep )
+    {
+        enpassant_[0] = '-';
+        enpassant_[1] = 0;
+    }
+
+    data_[m.from().getValue()] = EMPTY_SQUARE;
+
+    ++fullCount_;
+    return piece;
+}
+
+/**
+ * It is not easy to keep track of past en passant captures, cause we have
+ * to restore the enpassant_ values, and if two pawns advance two squares in a row
+ * the first one is lost. So an array would be needed...
+ * I decided to use a vector.
+ */
+void Chessboard::undoMove( Movement& m, Piece piece )
+{
+    importFen( pastPositions_.back() );
+    pastPositions_.pop_back();
+
+    /*if ( m.type() == Movement::Type::Normal )
+    {
+        data_[m.from().getValue()] = data_[m.to().getValue()];
+        data_[m.to().getValue()] = piece;
+    }
+    else if ( m.type() == Movement::Type::Promotion )
+    {
+        data_[m.from().getValue()];
+        data_[m.to().getValue()] = piece;
+    }
+
+    if ( m.type() == Movement::Type::DoublePawnStep )
+    {
         std::string to = m.to().getStr();
 
         enpassant_[0] = to[0];
@@ -510,9 +573,7 @@ void Chessboard::applyMovement( Movement& m )
         enpassant_[1] = 0;
     }
 
-    data_[m.from().getValue()] = EMPTY_SQUARE;
-
-    ++fullCount_;
+    --fullCount_;*/
 }
 
 void Chessboard::findVariations( Variations& variations ) const
@@ -625,7 +686,9 @@ void Chessboard::findPawnVariations(Variations& variations, int square) const
             int enpassant_square = Position::char2int(enpassant_);
             if ( (x_coord < 7 && square + 9 == enpassant_square ) || 
                  (x_coord > 0 && square + 7 == enpassant_square) )
-                appendVariation(variations, square, enpassant_square);
+                 {
+                    appendVariation(variations, square, enpassant_square);
+                 }
         }
 
         // is it on a promoting rank?

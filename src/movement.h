@@ -16,7 +16,7 @@ public:
         Promotion
     };
 
-    Movement( uint8_t from=0, uint8_t to=0, Type type = Type::Normal, char info = 0 );
+    Movement( uint8_t from=0, uint8_t to=0, Type type = Movement::Type::Normal, char info = 0 );
 
     std::string str() const;
 

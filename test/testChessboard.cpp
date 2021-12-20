@@ -67,11 +67,6 @@ TEST_CASE("variations")
     Variations v;
     cb.findVariations(v);
 
-    for( size_t i = 0; i < v.size(); ++i)
-    {
-        etlog(v[i].movement_.str() + " -> " + v[i].chessboard_.exportFen());
-    }
-
     REQUIRE( v.size() == 20 );
 
     // test king threatened filter
@@ -135,4 +130,32 @@ TEST_CASE("variations")
     cb.importFen("rnbqkbnr/ppppppp1/8/8/6Pp/8/PPPPPP1P/RNBQKBNR b KQkq g3 1 1");
     cb.findVariations(v10);
     REQUIRE( v10.size() == 23 );
+}
+
+TEST_CASE("movements")
+{
+    Chessboard cb;
+    cb.initDefault();
+
+    // test normal advance pawn
+    {
+        std::string before = cb.exportFen();
+        Movement m(52, 44);
+        Chessboard::Piece piece = cb.makeMove(m);
+        cb.undoMove(m, piece);
+        std::string after = cb.exportFen();
+
+        REQUIRE( before == after );
+    }
+
+    // test double square advance
+    {
+        std::string before = cb.exportFen();
+        Movement m(52, 36, Movement::Type::DoublePawnStep);
+        Chessboard::Piece piece = cb.makeMove(m);
+        cb.undoMove(m, piece);
+        std::string after = cb.exportFen();
+
+        REQUIRE( before == after );
+    }
 }

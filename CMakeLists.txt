@@ -29,11 +29,20 @@ set (SOURCES
   src/variation.cpp
 )
 
+set (PERF_SOURCES
+  src/perf.cpp
+  src/chessboard.cpp
+  src/movement.cpp
+  src/position.cpp
+  src/variation.cpp
+)
+
 find_package(Boost 1.75.0)
 
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
   add_executable(xadrez ${SOURCES})
+  add_executable(perf ${PERF_SOURCES})
 endif()
 
 
@@ -44,6 +53,7 @@ if(MSVC)
   target_compile_options(xadrez PRIVATE /W4 /WX)
 else()
   target_compile_options(xadrez PRIVATE -std=c++17 -Wc++11-extensions -g3 -O0)
+  target_compile_options(perf PRIVATE -std=c++17 -Wc++11-extensions -g3 -O0)
 endif()
 
 install(TARGETS xadrez DESTINATION bin)

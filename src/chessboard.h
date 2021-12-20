@@ -4,6 +4,8 @@
 #include "movement.h"
 
 #include <iostream>
+#include <vector>
+#include <string>
 
 class Variation;
 typedef std::vector<Variation> Variations;
@@ -33,6 +35,10 @@ typedef std::vector<Variation> Variations;
 
 class Chessboard
 {
+public: 
+        typedef char Piece;
+
+private:
     enum class Player 
     {
         WHITE,
@@ -47,20 +53,20 @@ class Chessboard
         BLACK_QUEEN = 1 << 3
     };
 
-    constexpr static char WHITE_PAWN = 'P';
-    constexpr static char WHITE_ROOK = 'R';
-    constexpr static char WHITE_KNIGHT = 'N';
-    constexpr static char WHITE_BISHOP = 'B';
-    constexpr static char WHITE_KING = 'K';
-    constexpr static char WHITE_QUEEN = 'Q';
-    constexpr static char BLACK_PAWN = 'p';
-    constexpr static char BLACK_ROOK = 'r';
-    constexpr static char BLACK_KNIGHT = 'n';
-    constexpr static char BLACK_BISHOP = 'b';
-    constexpr static char BLACK_KING = 'k';
-    constexpr static char BLACK_QUEEN = 'q';
+    constexpr static Piece WHITE_PAWN = 'P';
+    constexpr static Piece WHITE_ROOK = 'R';
+    constexpr static Piece WHITE_KNIGHT = 'N';
+    constexpr static Piece WHITE_BISHOP = 'B';
+    constexpr static Piece WHITE_KING = 'K';
+    constexpr static Piece WHITE_QUEEN = 'Q';
+    constexpr static Piece BLACK_PAWN = 'p';
+    constexpr static Piece BLACK_ROOK = 'r';
+    constexpr static Piece BLACK_KNIGHT = 'n';
+    constexpr static Piece BLACK_BISHOP = 'b';
+    constexpr static Piece BLACK_KING = 'k';
+    constexpr static Piece BLACK_QUEEN = 'q';
 
-    constexpr static char EMPTY_SQUARE = '0';
+    constexpr static Piece EMPTY_SQUARE = '0';
 
     constexpr static char WHITE_TURN = 'w';
     constexpr static char BLACK_TURN = 'b';
@@ -88,6 +94,10 @@ public:
     // evaluation
     float evaluation() const;
 
+    // move
+    Piece makeMove( Movement& m );
+    void undoMove( Movement& m, Piece captured );
+
 private:
     void reset();
 
@@ -102,9 +112,6 @@ private:
     bool isKingThreatened(int square) const;
     int findKing() const;
 
-    // move
-    void applyMovement( Movement& m );
-
     // queries about squares, coordinates
     bool isSquareOccupied( int square ) const;
     bool isSquareWhite( int square ) const;
@@ -116,6 +123,9 @@ private:
 private:
     // 64 squares of the board starting top-left
     uint8_t data_[64];
+
+    // past positions
+    std::vector< std::string > pastPositions_;
 
     // 'b' or 'w'
     char turn_;
