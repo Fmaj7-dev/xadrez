@@ -259,13 +259,24 @@ void Chessboard::appendVariation(Variations& variations, int from, int to, Movem
     // undo the switch makeMove did, so that we can really test if the king is threatened
     vchessboard_.switchTurn();
 
-    int kingPosition = vchessboard_.findKing();
+    if (!vchessboard_.isInCheck())
+        variations.push_back( variation );
+
+
+    /*int kingPosition = vchessboard_.findKing();
 
     // only append it if the king is not threatened
     if ( !vchessboard_.isKingThreatened( kingPosition ) )
     {
         variations.push_back( variation );
-    }
+    }*/
+}
+
+bool Chessboard::isInCheck() const
+{
+    int kingPosition = findKing();
+
+    return isPieceThreatened( kingPosition );
 }
 
 int Chessboard::findKing() const
@@ -288,7 +299,7 @@ int Chessboard::findKing() const
     return 0;
 }
 
-bool Chessboard::isKingThreatened(int square) const
+bool Chessboard::isPieceThreatened(int square) const
 {
     int x_coord = square % 8;
     int y_coord = square / 8;
@@ -1003,12 +1014,12 @@ void Chessboard::findKingVariations(Variations& variations, int square ) const
     {
         if ( castling_ & static_cast<uint8_t>(CASTLING::WHITE_KING))
         {
-            if ( !isSquareOccupied(61) && !isSquareOccupied(62) )
+            if ( !isSquareOccupied(61) && !isSquareOccupied(62) && !isPieceThreatened(61) && !isPieceThreatened(62) )
                 appendVariation( variations, 60, 62 );
         }
         if ( castling_ & static_cast<uint8_t>(CASTLING::WHITE_QUEEN))
         {
-            if ( !isSquareOccupied(57) && !isSquareOccupied(58) && !isSquareOccupied(59) )
+            if ( !isSquareOccupied(58) && !isSquareOccupied(59) && !isPieceThreatened(58) && !isPieceThreatened(59) )
                 appendVariation( variations, 60, 58 );
         }
     }
@@ -1016,12 +1027,12 @@ void Chessboard::findKingVariations(Variations& variations, int square ) const
     {
         if (castling_ & static_cast<uint8_t>(CASTLING::BLACK_KING) )
         {
-            if ( !isSquareOccupied(5) && !isSquareOccupied(6) )
+            if ( !isSquareOccupied(5) && !isSquareOccupied(6) && !isPieceThreatened(5) && !isPieceThreatened(6) )
                 appendVariation( variations, 4, 6 );
         }
         if (castling_ & static_cast<uint8_t>(CASTLING::BLACK_QUEEN) )
         {
-            if ( !isSquareOccupied(1) && !isSquareOccupied(2) && !isSquareOccupied(3) )
+            if ( !isSquareOccupied(2) && !isSquareOccupied(3) && !isPieceThreatened(2) && !isPieceThreatened(3) )
                 appendVariation( variations, 4, 2 );
         }
    } 

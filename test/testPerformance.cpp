@@ -38,71 +38,81 @@ TEST_CASE("Test Performance")
     {
         numVariations1++;
         //float neval = v[i].chessboard_.evaluation();
-
+        cb.makeMove(v[i].movement_);
         // second level variations
         {
             Variations v2;
-            v[i].chessboard_.findVariations(v2);
+            //v[i].chessboard_.findVariations(v2);
+            cb.findVariations(v2);
 
             for ( size_t j = 0; j < v2.size(); ++j )
             {
                 numVariations2++;
                 //std::cout<<v2[j].chessboard_.exportFen()<<std::endl;
-                
+                cb.makeMove(v2[j].movement_);   
                 // third level variations
                 {
                     Variations v3;
-                    v2[j].chessboard_.findVariations(v3);
+                    //v2[j].chessboard_.findVariations(v3);
+                    cb.findVariations(v3);
 
                     for ( size_t k = 0; k < v3.size(); ++k )
                     {
                         numVariations3++;
+                        cb.makeMove(v3[k].movement_);
                         // fourth level
                         {
                             Variations v4;
-                            v3[k].chessboard_.findVariations(v4);
+                            //v3[k].chessboard_.findVariations(v4);
+                            cb.findVariations(v4);
 
                             for ( size_t l = 0; l < v4.size(); ++l )
                             {
                                 numVariations4++;
+                                cb.makeMove(v4[l].movement_);
                                 // fifth level
                                 {
                                     Variations v5;
-                                    v4[l].chessboard_.findVariations(v5);
+                                    //v4[l].chessboard_.findVariations(v5);
+                                    cb.findVariations(v5);
 
-                                    if (v5.empty())
+                                    /*if (v5.empty())
                                     {
                                         std::cout<<"checkmate level 5"<<std::endl;
                                         std::cout<<v4[l].chessboard_.exportFen()<<std::endl;
-                                    }
+                                    }*/
 
                                     for ( size_t m = 0; m < v5.size(); ++m )
                                     {
                                         numVariations5++;
+                                        cb.makeMove(v5[m].movement_);
                                         // sixth level
                                         {
                                             Variations v6;
-                                            v5[m].chessboard_.findVariations(v6);
+                                            //v5[m].chessboard_.findVariations(v6);
+                                            cb.findVariations(v6);
 
-                                            if (v6.empty())
+                                            /*if (v6.empty())
                                             {
                                                 std::cout<<"checkmate level 6"<<std::endl;
                                                 std::cout<<v5[m].chessboard_.exportFen()<<std::endl;
-                                            }
+                                            }*/
 
-                                            for ( size_t n = 0; n < v6.size(); ++n )
-                                            {
-                                                numVariations6++;
-                                            }
+                                            numVariations6 += v6.size();
                                         }
+                                        cb.undoMove();
                                     }
                                 }
+                                cb.undoMove();
                             }
                         }
+                        cb.undoMove();
                     }
                 }
+                cb.undoMove();
             }
-        }
+        } 
+        cb.undoMove();
     }
     auto end = std::chrono::steady_clock::now();
     std::cout << "Elapsed time in milliseconds: "

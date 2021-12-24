@@ -98,6 +98,8 @@ public:
     Piece makeMove( Movement& m );
     void undoMove( /*Movement& m, Piece captured*/ );
 
+    bool isInCheck() const;
+
 private:
     void reset();
 
@@ -109,7 +111,7 @@ private:
     void findBishopVariations(Variations& variations, int square ) const;
     void findQueenVariations(Variations& variations, int square ) const;
     void findKingVariations(Variations& variations, int square ) const;
-    bool isKingThreatened(int square) const;
+    bool isPieceThreatened(int square) const;
     int findKing() const;
 
     // queries about squares, coordinates
