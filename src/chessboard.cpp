@@ -202,6 +202,21 @@ std::string Chessboard::exportFen() const
     return fen;
 }
 
+void Chessboard::prettyPrint() const
+{
+    std::cout << "  a b c d e f g h" << std::endl;
+
+    for ( int i = 0; i < 8; ++i )
+    {
+        std::cout << 8-i << " ";
+        for ( int j = 0; j < 8; ++j )
+        {
+            std::cout << data_[i*8+j] << " ";
+        }
+        std::cout << std::endl;
+    }
+}
+
 float Chessboard::evaluation() const
 {
     float evaluation = 0;
@@ -495,8 +510,25 @@ Chessboard::Piece Chessboard::makeMove( Movement& m )
     pastPositions_.push_back( exportFen() );
     Piece piece = EMPTY_SQUARE;
 
+    if ( m.type() == Movement::Type::EnPassantCapture )
+    {
+        // return captured piece or EMPTY_SQUARE if movement normal
+        //piece = data_[m.to().getValue()];
+        if ( turn_ == 'w' )
+        {
+            piece = data_[m.to().getValue()+8];
+            data_[m.to().getValue()+8] = EMPTY_SQUARE;
+        }
+        else if ( turn_ == 'b' )
+        {
+            piece = data_[m.to().getValue()-8];
+            data_[m.to().getValue()-8] = EMPTY_SQUARE;
+        }
+        data_[ m.to().getValue() ] = data_[ m.from().getValue() ];
+    }
+
     // Normal move: piece move, piece capture, advanced pawn
-    if ( m.type() == Movement::Type::Normal )
+    else if ( m.type() == Movement::Type::Normal )
     {
         // return captured piece or EMPTY_SQUARE if movement normal
         piece = data_[m.to().getValue()];
@@ -651,7 +683,7 @@ void Chessboard::findPawnVariations(Variations& variations, int square) const
             if ( (x_coord > 0 && square - 9 == enpassant_square) || 
                  (x_coord < 7 && square - 7 == enpassant_square) )
             {
-                appendVariation(variations, square, enpassant_square);
+                appendVariation(variations, square, enpassant_square, Movement::Type::EnPassantCapture);
             }
         }
 
@@ -705,7 +737,7 @@ void Chessboard::findPawnVariations(Variations& variations, int square) const
             if ( (x_coord < 7 && square + 9 == enpassant_square ) || 
                  (x_coord > 0 && square + 7 == enpassant_square) )
                  {
-                    appendVariation(variations, square, enpassant_square);
+                    appendVariation(variations, square, enpassant_square, Movement::Type::EnPassantCapture);
                  }
         }
 

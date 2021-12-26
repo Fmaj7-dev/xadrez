@@ -100,6 +100,8 @@ public:
 
     bool isInCheck() const;
 
+    void prettyPrint() const;
+
 private:
     void reset();
 

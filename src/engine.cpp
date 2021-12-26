@@ -10,6 +10,47 @@ Engine::Engine()
 
 }
 
+float alphaBetaMin(float alpha, float beta, float depthleft, Chessboard& chessboard);
+
+float alphaBetaMax(float alpha, float beta, float depthleft, Chessboard& chessboard)
+{
+    if (depthleft == 0)
+        return chessboard.evaluation();
+
+    Variations variations;
+    chessboard.findVariations(variations);
+    for (Variation v : variations)
+    {
+        chessboard.makeMove(v.movement_);
+        float score = alphaBetaMin(alpha, beta, depthleft - 1, chessboard);
+        chessboard.undoMove();
+        if (score >= beta)
+            return beta;
+        if (score > alpha)
+            alpha = score;
+    }
+    return alpha;
+}
+
+float alphaBetaMin(float alpha, float beta, float depthleft, Chessboard& chessboard)
+{
+    if (depthleft == 0)
+        return chessboard.evaluation();
+
+    Variations variations;
+    chessboard.findVariations(variations);
+    for (Variation v : variations)
+    {
+        chessboard.makeMove(v.movement_);
+        int score = alphaBetaMax(alpha, beta, depthleft - 1, chessboard);
+        chessboard.undoMove();
+        if (score <= alpha)
+            return alpha;
+        if (score < beta)
+            beta = score;
+    }
+}
+
 std::string Engine::findBestMove( uint32_t seconds )
 {
     seconds = 0;
