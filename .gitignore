@@ -38,3 +38,4 @@ build/
 cmake_install.cmake
 log.txt
 Makefile
+test/Makefile

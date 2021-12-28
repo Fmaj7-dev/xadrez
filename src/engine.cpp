@@ -49,6 +49,12 @@ float alphaBetaMin(float alpha, float beta, float depthleft, Chessboard& chessbo
         if (score < beta)
             beta = score;
     }
+    return beta;
+}
+
+float Engine::runAB()
+{
+    return alphaBetaMax(-100, 100, 2, chessboard_);
 }
 
 std::string Engine::findBestMove( uint32_t seconds )

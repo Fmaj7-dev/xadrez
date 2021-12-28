@@ -19,7 +19,8 @@ if(Boost_FOUND)
                 testChessboard.cpp
                 testPosition.cpp
                 testMovement.cpp
-                testPerformance.cpp
+                #testPerformance.cpp
+                testEngine.cpp
                 )
 endif()
 

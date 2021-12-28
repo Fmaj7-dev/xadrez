@@ -355,7 +355,7 @@ bool Chessboard::isPieceThreatened(int square) const
     x[7] = x_coord+1;
     y[7] = y_coord+2;
 
-    if ( turn_ == 'w' )
+    if ( turn_ == WHITE_TURN )
     {
         for (int i = 0; i < 8; ++i)
         {
@@ -364,7 +364,7 @@ bool Chessboard::isPieceThreatened(int square) const
         }
 
     }
-    else if (turn_ == 'b')
+    else if (turn_ == BLACK_TURN)
     {
         for (int i = 0; i < 8; ++i)
             if( validCoordinates(x[i], y[i]) && data_[x[i] + y[i]*8] == 'N' )
@@ -385,12 +385,12 @@ bool Chessboard::isPieceThreatened(int square) const
                 lambda();
             else
             {
-                if ( turn_ == 'w' )
+                if ( turn_ == WHITE_TURN )
                 {
                     if ( data_[target_square] == 'r' ||  data_[target_square] == 'q')
                         return true;
                 }
-                else if ( turn_ == 'b' )
+                else if ( turn_ == BLACK_TURN )
                 {
                     if ( data_[target_square] == 'R' ||  data_[target_square] == 'Q')
                         return true;
@@ -441,12 +441,12 @@ bool Chessboard::isPieceThreatened(int square) const
                 lambda();
             else
             {
-                if ( turn_ == 'w' )
+                if ( turn_ == WHITE_TURN )
                 {
                     if ( data_[target_square] == 'b' ||  data_[target_square] == 'q')
                         return true;
                 }
-                else if ( turn_ == 'b' )
+                else if ( turn_ == BLACK_TURN )
                 {
                     if ( data_[target_square] == 'B' ||  data_[target_square] == 'Q')
                         return true;
@@ -487,14 +487,14 @@ bool Chessboard::isPieceThreatened(int square) const
         return true;
 
     // threatened by pawn FIXME
-    if ( turn_ == 'w' )
+    if ( turn_ == WHITE_TURN )
     {
         if ( validCoordinates(x_coord-1, y_coord-1) && data_[x_coord-1 + (y_coord-1)*8] == 'p' )
             return true;
         if ( validCoordinates(x_coord+1, y_coord-1) && data_[x_coord+1 + (y_coord-1)*8] == 'p' )
             return true;
     }
-    else if ( turn_ == 'b' )
+    else if ( turn_ == BLACK_TURN )
     {
         if ( validCoordinates(x_coord-1, y_coord+1) && data_[x_coord-1 + (y_coord+1)*8] == 'P' )
             return true;
@@ -514,12 +514,12 @@ Chessboard::Piece Chessboard::makeMove( Movement& m )
     {
         // return captured piece or EMPTY_SQUARE if movement normal
         //piece = data_[m.to().getValue()];
-        if ( turn_ == 'w' )
+        if ( turn_ == WHITE_TURN )
         {
             piece = data_[m.to().getValue()+8];
             data_[m.to().getValue()+8] = EMPTY_SQUARE;
         }
-        else if ( turn_ == 'b' )
+        else if ( turn_ == BLACK_TURN )
         {
             piece = data_[m.to().getValue()-8];
             data_[m.to().getValue()-8] = EMPTY_SQUARE;
@@ -630,7 +630,7 @@ void Chessboard::findVariations( Variations& variations ) const
 {
     for (int i = 0; i < 64; ++i )
     {
-        if ( turn_ == 'w' )
+        if ( turn_ == WHITE_TURN )
         {
             if ( data_[i] == WHITE_PAWN )
                 findPawnVariations(variations, i);
@@ -646,7 +646,7 @@ void Chessboard::findVariations( Variations& variations ) const
                 findKingVariations(variations, i);
         }
 
-        if ( turn_ == 'b' )
+        if ( turn_ == BLACK_TURN )
         {
             if ( data_[i] == BLACK_PAWN )
                 findPawnVariations(variations, i);
@@ -674,7 +674,7 @@ void Chessboard::findPawnVariations(Variations& variations, int square) const
     int x_coord = square % 8;
     int y_coord = square / 8;
 
-    if ( turn_ == 'w' )
+    if ( turn_ == WHITE_TURN )
     {
         // if enpassant is an option
         if ( enpassant_[0] != '-' )
@@ -728,7 +728,7 @@ void Chessboard::findPawnVariations(Variations& variations, int square) const
             if ( !isSquareOccupied(square - 8))
                 appendPromotion(variations, square, square - 8, Player::WHITE);
     }
-    else if (turn_ == 'b')
+    else if (turn_ == BLACK_TURN)
     {
         // if enpassant is an option
         if ( enpassant_[0] != '-' )
@@ -832,7 +832,7 @@ void Chessboard::findKnightVariations(Variations& variations, int square ) const
     x[7] = x_coord+1;
     y[7] = y_coord+2;
 
-    if ( turn_ == 'w' )
+    if ( turn_ == WHITE_TURN )
     {
         for (int i = 0; i < 8; ++i)
         {
@@ -841,7 +841,7 @@ void Chessboard::findKnightVariations(Variations& variations, int square ) const
         }
 
     }
-    else if (turn_ == 'b')
+    else if (turn_ == BLACK_TURN)
     {
         for (int i = 0; i < 8; ++i)
             if( validCoordinates(x[i], y[i]) && (!isSquareOccupied(x[i] + y[i]*8) || isSquareWhite(x[i] + y[i]*8)) )
@@ -870,12 +870,12 @@ void Chessboard::findRookVariations(Variations& variations, int square ) const
             }
             else
             {
-                if ( turn_ == 'w' )
+                if ( turn_ == WHITE_TURN )
                 {
                     if ( isSquareBlack( target_square ) )
                         appendVariation( variations, square,target_square );
                 }
-                else if ( turn_ == 'b' )
+                else if ( turn_ == BLACK_TURN )
                 {
                     if ( isSquareWhite( target_square ) )
                         appendVariation( variations, square, target_square );
@@ -932,12 +932,12 @@ void Chessboard::findBishopVariations(Variations& variations, int square ) const
             }
             else
             {
-                if ( turn_ == 'w' )
+                if ( turn_ == WHITE_TURN )
                 {
                     if ( isSquareBlack( target_square ) )
                         appendVariation( variations, square,target_square );
                 }
-                else if ( turn_ == 'b' )
+                else if ( turn_ == BLACK_TURN )
                 {
                     if ( isSquareWhite( target_square ) )
                         appendVariation( variations, square, target_square );

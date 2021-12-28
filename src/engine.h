@@ -13,11 +13,13 @@ class Engine
 
 public:
     Engine();
-    void init(/* color */);
+    //void init(/* color */);
 
     // engine info
     std::string getAuthor();
     std::string getName();
+
+    float runAB();
 
     // load fem to chessboard
     void loadFen(std::string fen);
