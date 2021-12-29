@@ -19,7 +19,7 @@ public:
     std::string getAuthor();
     std::string getName();
 
-    float runAB();
+    float runAB(int depth);
 
     // load fem to chessboard
     void loadFen(std::string fen);

@@ -102,6 +102,8 @@ public:
 
     void prettyPrint() const;
 
+    bool isWhiteTurn() const;
+
 private:
     void reset();
 

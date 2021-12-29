@@ -1100,3 +1100,8 @@ bool Chessboard::isSquareBlack( int square ) const
 
     return false;
 }
+
+bool Chessboard::isWhiteTurn() const
+{
+    return turn_ == WHITE_TURN;
+}
