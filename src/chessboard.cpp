@@ -1,6 +1,6 @@
 #include "chessboard.h"
 #include "variation.h"
-#include "log.h"
+#include "util/log.h"
 
 #include <algorithm>
 #include <boost/algorithm/string.hpp>

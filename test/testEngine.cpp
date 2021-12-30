@@ -5,9 +5,10 @@
 TEST_CASE("Test Engine")
 {
     Engine e;
-    //e.loadFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-    e.loadFen("r2k1bnr/ppppp3/5pQ1/3q1np1/6bp/8/PPPPPPPP/RNB1KBNR w KQ - 0 1");
-    float value = e.runAB(4);
+
+    // fails with null move
+    e.loadFen("2Q5/1k1Q4/8/6p1/1r6/6PP/2K5/8 b - - 0 68");
+    std::string value = e.findBestMove(10);
 
     std::cout<<"value: "<<value<<std::endl;
 }

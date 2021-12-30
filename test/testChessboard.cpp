@@ -3,7 +3,7 @@
 #include "catch.hpp"
 #include "chessboard.h"
 #include "variation.h"
-#include "log.h"
+#include "util/log.h"
 
 #include <iostream>
 #include <fstream>

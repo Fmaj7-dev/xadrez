@@ -1,6 +1,6 @@
 #include "engine.h"
 #include "variation.h"
-#include "log.h"
+#include "util/log.h"
 
 const std::string Engine::author = "FMaj7";
 const std::string Engine::name = "xadrez 1.0";
@@ -155,8 +155,8 @@ std::string Engine::findBestMove( uint32_t seconds )
 
     LINE line;
     float ab;
-    int depth = 4;
-    
+    int depth = 5;
+
     if (chessboard_.isWhiteTurn())
         ab = alphaBetaMax(-1000, 1000, depth, chessboard_, &line);
     else

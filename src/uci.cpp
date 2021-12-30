@@ -1,5 +1,5 @@
 #include "uci.h"
-#include "log.h"
+#include "util/log.h"
 
 #include <iostream>
 #include <vector>
