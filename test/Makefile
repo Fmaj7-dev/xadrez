@@ -360,33 +360,6 @@ testChessboard.cpp.s:
 	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/testChessboard.cpp.s
 .PHONY : testChessboard.cpp.s
 
-testEngine.o: testEngine.cpp.o
-
-.PHONY : testEngine.o
-
-# target to build an object file
-testEngine.cpp.o:
-	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/testEngine.cpp.o
-.PHONY : testEngine.cpp.o
-
-testEngine.i: testEngine.cpp.i
-
-.PHONY : testEngine.i
-
-# target to preprocess a source file
-testEngine.cpp.i:
-	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/testEngine.cpp.i
-.PHONY : testEngine.cpp.i
-
-testEngine.s: testEngine.cpp.s
-
-.PHONY : testEngine.s
-
-# target to generate assembly for a file
-testEngine.cpp.s:
-	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/testEngine.cpp.s
-.PHONY : testEngine.cpp.s
-
 testMovement.o: testMovement.cpp.o
 
 .PHONY : testMovement.o
@@ -475,9 +448,6 @@ help:
 	@echo "... testChessboard.o"
 	@echo "... testChessboard.i"
 	@echo "... testChessboard.s"
-	@echo "... testEngine.o"
-	@echo "... testEngine.i"
-	@echo "... testEngine.s"
 	@echo "... testMovement.o"
 	@echo "... testMovement.i"
 	@echo "... testMovement.s"

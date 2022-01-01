@@ -266,9 +266,11 @@ void Chessboard::appendVariation(Variations& variations, int from, int to, Movem
     Movement movement(from, to, type, promotion);
 
     Variation variation;
-    Chessboard vchessboard_ = *this;
+    
     variation.movement_ = movement;
 
+#if (UNDO_FEN_STRING)
+    Chessboard vchessboard_ = *this;
     vchessboard_.makeMove( movement );
 
     // undo the switch makeMove did, so that we can really test if the king is threatened
@@ -276,6 +278,15 @@ void Chessboard::appendVariation(Variations& variations, int from, int to, Movem
 
     if (!vchessboard_.isInCheck())
         variations.push_back( variation );
+#else
+    variation.chessboard_ = *this;
+    variation.chessboard_.makeMove( movement );
+    variation.chessboard_.switchTurn();
+    if (!variation.chessboard_.isInCheck())
+        variations.push_back( variation );
+#endif
+
+
 
 
     /*int kingPosition = vchessboard_.findKing();
@@ -507,7 +518,12 @@ bool Chessboard::isPieceThreatened(int square) const
 
 Chessboard::Piece Chessboard::makeMove( Movement& m )
 {
+#if (UNDO_FEN_STRING)
     pastPositions_.push_back( exportFen() );
+#else
+    pastPositions_.push_back( *this );  
+#endif
+
     Piece piece = EMPTY_SQUARE;
 
     if ( m.type() == Movement::Type::EnPassantCapture )
@@ -588,7 +604,11 @@ void Chessboard::switchTurn()
  */
 void Chessboard::undoMove( /*Movement& m, Piece piece*/ )
 {
+#if (UNDO_FEN_STRING)
     importFen( pastPositions_.back() );
+#else
+    this->operator=( pastPositions_.back() );
+#endif
     pastPositions_.pop_back();
 
     /*if ( m.type() == Movement::Type::Normal )

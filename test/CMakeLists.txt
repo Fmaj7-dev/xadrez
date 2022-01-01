@@ -20,7 +20,7 @@ if(Boost_FOUND)
                 testPosition.cpp
                 testMovement.cpp
                 #testPerformance.cpp
-                testEngine.cpp
+                #testEngine.cpp
                 )
 endif()
 

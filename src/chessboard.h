@@ -33,6 +33,8 @@ typedef std::vector<Variation> Variations;
 
 */
 
+#define UNDO_FEN_STRING true
+
 class Chessboard
 {
 public: 
@@ -133,7 +135,11 @@ private:
     uint8_t data_[64];
 
     // past positions
+#if (UNDO_FEN_STRING)
     std::vector< std::string > pastPositions_;
+#else
+    std::vector< Chessboard > pastPositions_;
+#endif
 
     // BLACK_TURN or WHITE_TURN
     char turn_;

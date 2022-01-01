@@ -82,7 +82,7 @@ TEST_CASE("Test Performance")
                                         std::cout<<v4[l].chessboard_.exportFen()<<std::endl;
                                     }*/
 
-                                    for ( size_t m = 0; m < v5.size(); ++m )
+                                    /*for ( size_t m = 0; m < v5.size(); ++m )
                                     {
                                         numVariations5++;
                                         cb.makeMove(v5[m].movement_);
@@ -92,16 +92,10 @@ TEST_CASE("Test Performance")
                                             //v5[m].chessboard_.findVariations(v6);
                                             cb.findVariations(v6);
 
-                                            /*if (v6.empty())
-                                            {
-                                                std::cout<<"checkmate level 6"<<std::endl;
-                                                std::cout<<v5[m].chessboard_.exportFen()<<std::endl;
-                                            }*/
-
                                             numVariations6 += v6.size();
                                         }
                                         cb.undoMove();
-                                    }
+                                    }*/
                                 }
                                 cb.undoMove();
                             }

@@ -8,6 +8,8 @@
 #include <iostream>
 #include <fstream>
 
+#define UNDO_FEN_STRING true
+
 TEST_CASE("FEM default init")
 {
     Chessboard cb;
@@ -135,6 +137,7 @@ TEST_CASE("variations")
 
 TEST_CASE("movements")
 {
+# if (UNDO_FEN_STRING)
     Chessboard cb;
     cb.initDefault();
 
@@ -159,4 +162,5 @@ TEST_CASE("movements")
 
         REQUIRE( before == after );
     }
+#endif
 }

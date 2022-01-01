@@ -5,6 +5,8 @@
 
 #include <string>
 
+#define UNDO_FEN_STRING true
+
 class Engine
 {
     // strings

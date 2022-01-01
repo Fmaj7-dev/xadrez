@@ -14,24 +14,25 @@ void perf( Chessboard& cb, int depth, int& total_moves )
     total_moves += v.size();
 
     // print moves
-    for (auto& v : v)
+    /*for (auto& v : v)
     {
       cb.makeMove( v.movement_ );
-      //std::cout << v.movement_.str()<< " " <<cb.exportFen() << std::endl;    
+      std::cout << v.movement_.str()<< " " <<cb.exportFen() << std::endl;    
       cb.undoMove();
-    }
+    }*/
 
     return;
   }
 
   for (auto& v : v)
   {
-    cb.makeMove( v.movement_ );
+    //cb.makeMove( v.movement_ );
   
     if (depth > 0)  
-      perf( cb, depth - 1, total_moves);
+      //perf( cb, depth - 1, total_moves);
+      perf( v.chessboard_, depth - 1, total_moves);
 
-    cb.undoMove();
+    //cb.undoMove();
   }
 }
 

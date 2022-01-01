@@ -7,6 +7,8 @@
 #include <vector>
 #include <iostream>
 
+#define UNDO_FEN_STRING true
+
 class Variation
 {
 public:
@@ -15,7 +17,10 @@ public:
 //private:
     Movement movement_;
 
-    //Chessboard chessboard_;
+#if (UNDO_FEN_STRING)
+#else
+    Chessboard chessboard_;
+#endif
 };
 
 typedef std::vector<Variation> Variations;

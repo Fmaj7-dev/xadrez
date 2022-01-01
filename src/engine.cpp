@@ -31,9 +31,13 @@ float alphaBetaMax(float alpha, float beta, float depthleft, Chessboard& chessbo
     chessboard.findVariations(variations);
     for (Variation v : variations)
     {
+#if (UNDO_FEN_STRING)        
         chessboard.makeMove(v.movement_);
         float score = alphaBetaMin(alpha, beta, depthleft - 1, chessboard, &line);
         chessboard.undoMove();
+#else
+        float score = alphaBetaMin(alpha, beta, depthleft - 1, v.chessboard_, &line);
+#endif
         if (score >= beta)
             return beta;
         if (score > alpha)
@@ -62,9 +66,13 @@ float alphaBetaMin(float alpha, float beta, float depthleft, Chessboard& chessbo
     chessboard.findVariations(variations);
     for (Variation v : variations)
     {
+#if (UNDO_FEN_STRING)
         chessboard.makeMove(v.movement_);
-        int score = alphaBetaMax(alpha, beta, depthleft - 1, chessboard, &line);
+        float score = alphaBetaMax(alpha, beta, depthleft - 1, chessboard, &line);
         chessboard.undoMove();
+#else
+        float score = alphaBetaMax(alpha, beta, depthleft - 1, v.chessboard_, &line);
+#endif
         if (score <= alpha)
             return alpha;
         if (score < beta)
@@ -79,7 +87,7 @@ float alphaBetaMin(float alpha, float beta, float depthleft, Chessboard& chessbo
     return beta;
 }
 
-float Engine::runAB(int depth)
+/*float Engine::runAB(int depth)
 {
     LINE line;
     float ab;
@@ -93,74 +101,18 @@ float Engine::runAB(int depth)
     {
         std::cout<<line.argmove[i].str()<<std::endl;
     }
-}
+}*/
 
 std::string Engine::findBestMove( uint32_t seconds )
 {
-    /*seconds = 0;
-
-    Variations v;
-    chessboard_.findVariations(v);
-
-    float eval = 100;
-    int chosen = 0;
-
-    etlog("found "+std::to_string(v.size())+" variations");
-
-    for( size_t i = 0; i < v.size(); ++i)
-    {
-        //etlog(v[i].movement_.str() + " -> " + v[i].chessboard_.exportFen());
-        chessboard_.makeMove(v[i].movement_);
-        float neval = chessboard_.evaluation();
-        chessboard_.undoMove();
-
-        // second level variations
-        #if 0
-        {
-            Variations v2;
-            v[i].chessboard_.findVariations(v2);
-
-            for ( size_t j = 0; j < v2.size(); ++j )
-            {
-                etlog("\t"+v2[j].movement_.str() + " -> " + v2[j].chessboard_.exportFen());
-
-                    // third level variations
-                    #if 1
-                    {
-                        Variations v3;
-                        v2[j].chessboard_.findVariations(v3);
-
-                        for ( size_t k = 0; k < v3.size(); ++k )
-                        {
-                            etlog("\t\t"+v3[k].movement_.str() + " -> " + v3[k].chessboard_.exportFen());
-                        }
-                    }
-                    #endif
-            }
-        }
-        #endif
-
-        if (neval < eval)
-        {
-            eval = neval;
-            chosen = i;
-        }
-    }
-
-    if (v.empty())
-        return "0000";
-
-    etlog("Best move: " + v[chosen].movement_.str()+" eval: "+std::to_string(eval));
-    return v[chosen].movement_.str();*/
-
     LINE line;
     float ab;
-    int depth = 5;
+    int depth = 6;
 
     if (chessboard_.isWhiteTurn())
-        ab = alphaBetaMax(-1000, 1000, depth, chessboard_, &line);
+        ab = alphaBetaMax(-10000, 10000, depth, chessboard_, &line);
     else
-        ab = alphaBetaMin(-1000, 1000, depth, chessboard_, &line);
+        ab = alphaBetaMin(-10000, 10000, depth, chessboard_, &line);
 
     return line.argmove[0].str();
 }
