@@ -1,16 +1,17 @@
 #include "chessboard.h"
 #include "variation.h"
 #include "util/log.h"
+#include "util/ettune.h"
 
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
 
 Chessboard::Chessboard()
-{
+{MEASURE
 }
 
 const Chessboard& Chessboard::operator=(const Chessboard& rhs)
-{
+{MEASURE
     std::copy(std::begin(rhs.data_), std::end(rhs.data_), std::begin(data_));
     turn_ = rhs.turn_;
     castling_ = rhs.castling_;
@@ -22,17 +23,17 @@ const Chessboard& Chessboard::operator=(const Chessboard& rhs)
 }
 
 void Chessboard::initDefault()
-{
+{MEASURE
     importFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 }
 
 bool isValidNumber(char c)
-{
+{MEASURE
     return c > '0' && c < '9';
 }
 
 bool isValidPiece(char c)
-{
+{MEASURE
     return c == 'r' || c == 'R' ||
            c == 'n' || c == 'N' ||
            c == 'b' || c == 'B' ||
@@ -42,17 +43,17 @@ bool isValidPiece(char c)
 }
 
 bool isNewLine(char c)
-{
+{MEASURE
     return c == '/';
 }
 
 bool isSpace(char c)
-{
+{MEASURE
     return c == ' ';
 }
 
 void Chessboard::reset()
-{
+{MEASURE
     std::fill(std::begin(data_), std::end(data_), 0);
     turn_ = 0;
     castling_ = 0;
@@ -63,7 +64,7 @@ void Chessboard::reset()
 }
 
 void Chessboard::importFen(const std::string& fen)
-{
+{MEASURE
     reset();
 
     std::vector<std::string> fen_strings;
@@ -122,7 +123,7 @@ void Chessboard::importFen(const std::string& fen)
 }
 
 std::string Chessboard::exportFen() const
-{
+{MEASURE
     std::string fen;
 
     // 1. export pieces
@@ -203,7 +204,7 @@ std::string Chessboard::exportFen() const
 }
 
 void Chessboard::prettyPrint() const
-{
+{MEASURE
     std::cout << "  a b c d e f g h" << std::endl;
 
     for ( int i = 0; i < 8; ++i )
@@ -218,7 +219,7 @@ void Chessboard::prettyPrint() const
 }
 
 float Chessboard::evaluation() const
-{
+{MEASURE
     float evaluation = 0;
 
     for (int i = 0; i < 64; ++i )
@@ -245,7 +246,7 @@ float Chessboard::evaluation() const
 }
 
 void Chessboard::appendPromotion(Variations& variations, int from, int to, Player player) const
-{
+{MEASURE
     if ( player == Player::WHITE )
     {
         appendVariation( variations, from, to, Movement::Type::Promotion, WHITE_QUEEN );
@@ -261,8 +262,9 @@ void Chessboard::appendPromotion(Variations& variations, int from, int to, Playe
         appendVariation( variations, from, to, Movement::Type::Promotion, BLACK_KNIGHT );
     }
 }
+
 void Chessboard::appendVariation(Variations& variations, int from, int to, Movement::Type type, char promotion) const
-{
+{MEASURE
     Movement movement(from, to, type, promotion);
 
     Variation variation;
@@ -299,14 +301,14 @@ void Chessboard::appendVariation(Variations& variations, int from, int to, Movem
 }
 
 bool Chessboard::isInCheck() const
-{
+{MEASURE
     int kingPosition = findKing();
 
     return isPieceThreatened( kingPosition );
 }
 
 int Chessboard::findKing() const
-{
+{MEASURE
     if ( turn_ == BLACK_TURN )
         for (int i = 0; i < 64; ++i)
         {
@@ -326,7 +328,7 @@ int Chessboard::findKing() const
 }
 
 bool Chessboard::isPieceThreatened(int square) const
-{
+{MEASURE
     int x_coord = square % 8;
     int y_coord = square / 8;
 
@@ -370,7 +372,7 @@ bool Chessboard::isPieceThreatened(int square) const
     {
         for (int i = 0; i < 8; ++i)
         {
-            if( validCoordinates(x[i], y[i]) && data_[x[i] + y[i]*8] == 'n' )
+            if( validCoordinates(x[i], y[i]) && data_[x[i] + y[i]*8] == BLACK_KNIGHT )
                 return true;
         }
 
@@ -378,7 +380,7 @@ bool Chessboard::isPieceThreatened(int square) const
     else if (turn_ == BLACK_TURN)
     {
         for (int i = 0; i < 8; ++i)
-            if( validCoordinates(x[i], y[i]) && data_[x[i] + y[i]*8] == 'N' )
+            if( validCoordinates(x[i], y[i]) && data_[x[i] + y[i]*8] == WHITE_KNIGHT )
                 return true;
     }
 
@@ -398,12 +400,12 @@ bool Chessboard::isPieceThreatened(int square) const
             {
                 if ( turn_ == WHITE_TURN )
                 {
-                    if ( data_[target_square] == 'r' ||  data_[target_square] == 'q')
+                    if ( data_[target_square] == BLACK_ROOK ||  data_[target_square] == BLACK_QUEEN)
                         return true;
                 }
                 else if ( turn_ == BLACK_TURN )
                 {
-                    if ( data_[target_square] == 'R' ||  data_[target_square] == 'Q')
+                    if ( data_[target_square] == WHITE_ROOK ||  data_[target_square] == WHITE_QUEEN)
                         return true;
                 }
                 return false;
@@ -454,12 +456,12 @@ bool Chessboard::isPieceThreatened(int square) const
             {
                 if ( turn_ == WHITE_TURN )
                 {
-                    if ( data_[target_square] == 'b' ||  data_[target_square] == 'q')
+                    if ( data_[target_square] == BLACK_BISHOP ||  data_[target_square] == BLACK_QUEEN)
                         return true;
                 }
                 else if ( turn_ == BLACK_TURN )
                 {
-                    if ( data_[target_square] == 'B' ||  data_[target_square] == 'Q')
+                    if ( data_[target_square] == WHITE_BISHOP ||  data_[target_square] == WHITE_QUEEN)
                         return true;
                 }
                 break;
@@ -500,16 +502,16 @@ bool Chessboard::isPieceThreatened(int square) const
     // threatened by pawn FIXME
     if ( turn_ == WHITE_TURN )
     {
-        if ( validCoordinates(x_coord-1, y_coord-1) && data_[x_coord-1 + (y_coord-1)*8] == 'p' )
+        if ( validCoordinates(x_coord-1, y_coord-1) && data_[x_coord-1 + (y_coord-1)*8] == BLACK_PAWN )
             return true;
-        if ( validCoordinates(x_coord+1, y_coord-1) && data_[x_coord+1 + (y_coord-1)*8] == 'p' )
+        if ( validCoordinates(x_coord+1, y_coord-1) && data_[x_coord+1 + (y_coord-1)*8] == BLACK_PAWN )
             return true;
     }
     else if ( turn_ == BLACK_TURN )
     {
-        if ( validCoordinates(x_coord-1, y_coord+1) && data_[x_coord-1 + (y_coord+1)*8] == 'P' )
+        if ( validCoordinates(x_coord-1, y_coord+1) && data_[x_coord-1 + (y_coord+1)*8] == WHITE_PAWN )
             return true;
-        if ( validCoordinates(x_coord+1, y_coord+1) && data_[x_coord+1 + (y_coord+1)*8] == 'P' )
+        if ( validCoordinates(x_coord+1, y_coord+1) && data_[x_coord+1 + (y_coord+1)*8] == WHITE_PAWN )
             return true;
     }
 
@@ -517,7 +519,7 @@ bool Chessboard::isPieceThreatened(int square) const
 }
 
 Chessboard::Piece Chessboard::makeMove( Movement& m )
-{
+{MEASURE
 #if (UNDO_FEN_STRING)
     pastPositions_.push_back( exportFen() );
 #else
@@ -589,7 +591,7 @@ Chessboard::Piece Chessboard::makeMove( Movement& m )
 }
 
 void Chessboard::switchTurn()
-{
+{MEASURE
     if (turn_ == BLACK_TURN)
         turn_ = WHITE_TURN;
     else if (turn_ == WHITE_TURN)
@@ -603,7 +605,7 @@ void Chessboard::switchTurn()
  * I decided to use a vector.
  */
 void Chessboard::undoMove( /*Movement& m, Piece piece*/ )
-{
+{MEASURE
 #if (UNDO_FEN_STRING)
     importFen( pastPositions_.back() );
 #else
@@ -647,7 +649,7 @@ void Chessboard::undoMove( /*Movement& m, Piece piece*/ )
 }
 
 void Chessboard::findVariations( Variations& variations ) const
-{
+{MEASURE
     for (int i = 0; i < 64; ++i )
     {
         if ( turn_ == WHITE_TURN )
@@ -685,12 +687,12 @@ void Chessboard::findVariations( Variations& variations ) const
 }
 
 int Chessboard::getEnPassantSquare() const
-{
+{MEASURE
     return Position::char2int(enpassant_);
 }
 
 void Chessboard::findPawnVariations(Variations& variations, int square) const
-{
+{MEASURE
     int x_coord = square % 8;
     int y_coord = square / 8;
 
@@ -805,7 +807,7 @@ void Chessboard::findPawnVariations(Variations& variations, int square) const
 }
 
 bool Chessboard::validCoordinates(int x, int y) const
-{
+{MEASURE
     if ( x < 0 || x > 7 || y < 0 || y > 7 )
         return false;
 
@@ -813,7 +815,7 @@ bool Chessboard::validCoordinates(int x, int y) const
 }
 
 void Chessboard::findKnightVariations(Variations& variations, int square ) const
-{
+{MEASURE
     int x_coord = square % 8;
     int y_coord = square / 8;
 
@@ -856,21 +858,27 @@ void Chessboard::findKnightVariations(Variations& variations, int square ) const
     {
         for (int i = 0; i < 8; ++i)
         {
-            if( validCoordinates(x[i], y[i]) && (!isSquareOccupied(x[i] + y[i]*8) || isSquareBlack(x[i] + y[i]*8)) )
-                appendVariation(variations, square, x[i] + y[i]*8);
+            int dest_square = x[i] + y[i]*8;
+            //if( validCoordinates(x[i], y[i]) && (!isSquareOccupied(x[i] + y[i]*8) || isSquareBlack(x[i] + y[i]*8)) )
+            if( validCoordinates(x[i], y[i]) && !isSquareWhite(dest_square) )
+                appendVariation(variations, square, dest_square);
         }
 
     }
     else if (turn_ == BLACK_TURN)
     {
         for (int i = 0; i < 8; ++i)
-            if( validCoordinates(x[i], y[i]) && (!isSquareOccupied(x[i] + y[i]*8) || isSquareWhite(x[i] + y[i]*8)) )
-                appendVariation(variations, square, x[i] + y[i]*8);
+        {
+            int dest_square = x[i] + y[i]*8;
+            //if( validCoordinates(x[i], y[i]) && (!isSquareOccupied(x[i] + y[i]*8) || isSquareWhite(x[i] + y[i]*8)) )
+            if( validCoordinates(x[i], y[i]) && !isSquareBlack(dest_square) )
+                appendVariation(variations, square, dest_square);
+        }
     }
 }
 
 void Chessboard::findRookVariations(Variations& variations, int square ) const
-{
+{MEASURE
     int x_coord = square % 8;
     int y_coord = square / 8;
 
@@ -932,7 +940,7 @@ void Chessboard::findRookVariations(Variations& variations, int square ) const
 }
 
 void Chessboard::findBishopVariations(Variations& variations, int square ) const 
-{
+{MEASURE
     int x_coord = square % 8;
     int y_coord = square / 8;
 
@@ -994,13 +1002,13 @@ void Chessboard::findBishopVariations(Variations& variations, int square ) const
 }
 
 void Chessboard::findQueenVariations(Variations& variations, int square ) const
-{
+{MEASURE
     findRookVariations( variations, square );
     findBishopVariations( variations, square );
 }
 
 void Chessboard::findKingVariations(Variations& variations, int square ) const
-{
+{MEASURE
     int x_coord = square % 8;
     int y_coord = square / 8;
 
@@ -1091,37 +1099,39 @@ void Chessboard::findKingVariations(Variations& variations, int square ) const
 }
 
 bool Chessboard::isSquareOccupied( int square ) const
-{
+{MEASURE
     return data_[square] != EMPTY_SQUARE;
 }
 
 bool Chessboard::isSquareWhite( int square ) const
-{
-    if ( data_[square] == WHITE_PAWN || 
+{MEASURE
+    /*if ( data_[square] == WHITE_PAWN || 
          data_[square] == WHITE_ROOK || 
          data_[square] == WHITE_KNIGHT || 
          data_[square] == WHITE_BISHOP || 
          data_[square] == WHITE_QUEEN || 
          data_[square] == WHITE_KING )
-         return true;
+         return true;*/
+         return data_[square] >= 65 && data_[square] <=90;
 
-    return false;
+    //return false;
 }
 
 bool Chessboard::isSquareBlack( int square ) const
-{
-    if ( data_[square] == BLACK_PAWN || 
+{MEASURE
+    /*if ( data_[square] == BLACK_PAWN || 
          data_[square] == BLACK_ROOK || 
          data_[square] == BLACK_KNIGHT || 
          data_[square] == BLACK_BISHOP || 
          data_[square] == BLACK_QUEEN || 
          data_[square] == BLACK_KING )
-         return true;
+         return true;*/
+    return data_[square] >= 97 && data_[square] <=122;
 
-    return false;
+    //return false;
 }
 
 bool Chessboard::isWhiteTurn() const
-{
+{MEASURE
     return turn_ == WHITE_TURN;
 }

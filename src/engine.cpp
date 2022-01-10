@@ -1,6 +1,7 @@
 #include "engine.h"
 #include "variation.h"
 #include "util/log.h"
+#include "util/ettune.h"
 
 const std::string Engine::author = "FMaj7";
 const std::string Engine::name = "xadrez 1.0";
@@ -18,7 +19,7 @@ typedef struct LINE {
 float alphaBetaMin(float alpha, float beta, float depthleft, Chessboard& chessboard, LINE * pline);
 
 float alphaBetaMax(float alpha, float beta, float depthleft, Chessboard& chessboard, LINE * pline)
-{
+{MEASURE
     LINE line;
 
     if (depthleft == 0)
@@ -53,7 +54,7 @@ float alphaBetaMax(float alpha, float beta, float depthleft, Chessboard& chessbo
 }
 
 float alphaBetaMin(float alpha, float beta, float depthleft, Chessboard& chessboard, LINE * pline)
-{
+{MEASURE
     LINE line;
     //std::cout<<"alphaBetaMin("<<alpha<<", "<<beta<<", "<<depthleft<<")"<<std::endl;
     if (depthleft == 0)
@@ -104,7 +105,7 @@ float alphaBetaMin(float alpha, float beta, float depthleft, Chessboard& chessbo
 }*/
 
 std::string Engine::findBestMove( uint32_t seconds )
-{
+{MEASURE
     LINE line;
     float ab;
     int depth = 6;
@@ -133,6 +134,6 @@ std::string Engine::getName()
 }
 
 void Engine::loadFen(std::string fen)
-{
+{MEASURE
     chessboard_.importFen(fen);
 }

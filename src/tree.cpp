@@ -1,4 +1,5 @@
 #include "tree.h"
+#include "util/ettune.h"
 
 Node::Node()
 {
@@ -6,7 +7,7 @@ Node::Node()
 }
 
 float Node::minimax( bool maximizing )
-{
+{MEASURE
     if ( children_.empty() )
         return variation_.chessboard_.evaluation();
 

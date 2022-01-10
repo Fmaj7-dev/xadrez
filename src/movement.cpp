@@ -1,4 +1,5 @@
 #include "movement.h"
+#include "util/ettune.h"
 
 Movement::Movement(uint8_t from, uint8_t to, Type type, char info )
 : fromSquare_(from),
@@ -10,7 +11,7 @@ Movement::Movement(uint8_t from, uint8_t to, Type type, char info )
 }
 
 std::string Movement::str() const
-{
+{MEASURE
     if ( fromSquare_.getValue() == 0 && toSquare_.getValue() == 0 )
         return std::string("null");
 
@@ -23,21 +24,21 @@ std::string Movement::str() const
 }
 
 const Position& Movement::from()
-{
+{MEASURE
     return fromSquare_;
 }
 
 const Position& Movement::to()
-{
+{MEASURE
     return toSquare_;
 }
 
 const Movement::Type Movement::type()
-{
+{MEASURE
     return type_;
 }
 
 const char Movement::info()
-{
+{MEASURE
     return extraInfo_;
 }

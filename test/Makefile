@@ -414,6 +414,33 @@ testPosition.cpp.s:
 	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/testPosition.cpp.s
 .PHONY : testPosition.cpp.s
 
+testettune.o: testettune.cpp.o
+
+.PHONY : testettune.o
+
+# target to build an object file
+testettune.cpp.o:
+	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/testettune.cpp.o
+.PHONY : testettune.cpp.o
+
+testettune.i: testettune.cpp.i
+
+.PHONY : testettune.i
+
+# target to preprocess a source file
+testettune.cpp.i:
+	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/testettune.cpp.i
+.PHONY : testettune.cpp.i
+
+testettune.s: testettune.cpp.s
+
+.PHONY : testettune.s
+
+# target to generate assembly for a file
+testettune.cpp.s:
+	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/testettune.cpp.s
+.PHONY : testettune.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -454,6 +481,9 @@ help:
 	@echo "... testPosition.o"
 	@echo "... testPosition.i"
 	@echo "... testPosition.s"
+	@echo "... testettune.o"
+	@echo "... testettune.i"
+	@echo "... testettune.s"
 .PHONY : help
 
 

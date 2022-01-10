@@ -1,5 +1,6 @@
 #include "uci.h"
 #include "util/log.h"
+#include "util/ettune.h"
 
 #include <iostream>
 #include <vector>
@@ -32,17 +33,17 @@ const string readyok("readyok");
 const string init("init");
 
 UCI::UCI()
-{
+{MEASURE
     etlog("------------- NEW EXECUTION -----------------");
 }
 
 bool BothAreSpaces(char lhs, char rhs) 
-{ 
+{ MEASURE
     return (lhs == rhs) && (lhs == ' '); 
 }
 
 int UCI::run()
-{
+{MEASURE
     cout << engine_.getName() << " " << engine_.getAuthor() << endl;
     while( true )
     {

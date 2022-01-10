@@ -21,6 +21,7 @@ if(Boost_FOUND)
                 testMovement.cpp
                 #testPerformance.cpp
                 #testEngine.cpp
+                testettune.cpp
                 )
 endif()
 
