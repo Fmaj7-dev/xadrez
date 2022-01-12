@@ -8,6 +8,8 @@
 void perf( Chessboard& cb, int depth, int& total_moves )
 {MEASURE
   Variations v;
+  v.reserve(15);
+
   cb.findVariations(v);
 
   if (depth == 1)

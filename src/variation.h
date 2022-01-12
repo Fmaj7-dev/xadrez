@@ -13,6 +13,7 @@ class Variation
 {
 public:
     Variation();
+    Variation(Movement& movement);
 
 //private:
     Movement movement_;

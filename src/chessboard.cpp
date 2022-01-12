@@ -267,13 +267,11 @@ void Chessboard::appendVariation(Variations& variations, int from, int to, Movem
 {MEASURE
     Movement movement(from, to, type, promotion);
 
-    Variation variation;
+    Variation variation(movement);
     
-    variation.movement_ = movement;
-
 #if (UNDO_FEN_STRING)
     Chessboard vchessboard_ = *this;
-    vchessboard_.makeMove( movement );
+    vchessboard_.makeMove( movement, true );
 
     // undo the switch makeMove did, so that we can really test if the king is threatened
     vchessboard_.switchTurn();
@@ -282,7 +280,7 @@ void Chessboard::appendVariation(Variations& variations, int from, int to, Movem
         variations.push_back( variation );
 #else
     variation.chessboard_ = *this;
-    variation.chessboard_.makeMove( movement );
+    variation.chessboard_.makeMove( movement, true );
     variation.chessboard_.switchTurn();
     if (!variation.chessboard_.isInCheck())
         variations.push_back( variation );
@@ -515,16 +513,22 @@ bool Chessboard::isPieceThreatened(int square) const
             return true;
     }
 
+    // FIXME: we are not checking minimum distance to the other king
+
     return false;
 }
 
-Chessboard::Piece Chessboard::makeMove( Movement& m )
+Chessboard::Piece Chessboard::makeMove( Movement& m, bool ignoreExport )
 {MEASURE
+
+    if (!ignoreExport)
+    {
 #if (UNDO_FEN_STRING)
-    pastPositions_.push_back( exportFen() );
+        pastPositions_.push_back( exportFen() );
 #else
-    pastPositions_.push_back( *this );  
+        pastPositions_.push_back( *this );  
 #endif
+    }
 
     Piece piece = EMPTY_SQUARE;
 

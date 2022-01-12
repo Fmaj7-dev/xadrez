@@ -97,7 +97,7 @@ public:
     float evaluation() const;
 
     // move
-    Piece makeMove( Movement& m );
+    Piece makeMove( Movement& m, bool ignoreExport = false );
     void undoMove( /*Movement& m, Piece captured*/ );
 
     bool isInCheck() const;

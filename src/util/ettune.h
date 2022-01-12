@@ -98,21 +98,21 @@ public:
                 currentContextNode_->context.num_ms += ms;
 
             currentContextNode_ = currentContextNode_->parent;
-        }
 
-        auto search = children.find(name);
-        if (search != children.end())
-        {
-            search->second.context.num_times_called++;
-            search->second.context.num_ms += ms;
-        }
-        else
-        {
-            ContextNode new_cn;
-            new_cn.context.num_times_called = 1;
-            new_cn.context.num_ms = ms;
-            new_cn.context.name = name;
-            children[name] = new_cn;
+            auto search = children.find(name);
+            if (search != children.end())
+            {
+                search->second.context.num_times_called++;
+                search->second.context.num_ms += ms;
+            }
+            else
+            {
+                ContextNode new_cn;
+                new_cn.context.num_times_called = 1;
+                new_cn.context.num_ms = ms;
+                new_cn.context.name = name;
+                children[name] = new_cn;
+            }
         }
     }
 
@@ -160,7 +160,7 @@ public:
 
     void printMeasures()
     {
-        recursivePrint(&root_, 0);
+        //recursivePrint(&root_, 0);
 
         std::cout<<"-----------------"<<std::endl;
         printLinear();
@@ -206,5 +206,5 @@ private:
     std::string name_;
 };
 
-#define MEASURE Chrono chrono(__FUNCTION__);
-//#define MEASURE 
+//#define MEASURE Chrono chrono(__FUNCTION__);
+#define MEASURE 
