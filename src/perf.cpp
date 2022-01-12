@@ -18,13 +18,13 @@ void perf( Chessboard& cb, int depth, int& total_moves )
 
   for (auto& v : v)
   {
-    //cb.makeMove( v.movement_ );
+    cb.makeMove( v.movement_ );
   
     if (depth > 0)  
       perf( cb, depth - 1, total_moves);
       //perf( v.chessboard_, depth - 1, total_moves);
 
-    //cb.undoMove();
+    cb.undoMove();
   }
 }
 
@@ -39,7 +39,7 @@ int main()
 
   int total_moves = 0;
 
-  perf( cb, 4, total_moves );
+  perf( cb, 5, total_moves );
 
   auto end = std::chrono::steady_clock::now();
 

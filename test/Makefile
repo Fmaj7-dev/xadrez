@@ -387,6 +387,33 @@ testMovement.cpp.s:
 	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/testMovement.cpp.s
 .PHONY : testMovement.cpp.s
 
+testPerformance.o: testPerformance.cpp.o
+
+.PHONY : testPerformance.o
+
+# target to build an object file
+testPerformance.cpp.o:
+	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/testPerformance.cpp.o
+.PHONY : testPerformance.cpp.o
+
+testPerformance.i: testPerformance.cpp.i
+
+.PHONY : testPerformance.i
+
+# target to preprocess a source file
+testPerformance.cpp.i:
+	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/testPerformance.cpp.i
+.PHONY : testPerformance.cpp.i
+
+testPerformance.s: testPerformance.cpp.s
+
+.PHONY : testPerformance.s
+
+# target to generate assembly for a file
+testPerformance.cpp.s:
+	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/testPerformance.cpp.s
+.PHONY : testPerformance.cpp.s
+
 testPosition.o: testPosition.cpp.o
 
 .PHONY : testPosition.o
@@ -478,6 +505,9 @@ help:
 	@echo "... testMovement.o"
 	@echo "... testMovement.i"
 	@echo "... testMovement.s"
+	@echo "... testPerformance.o"
+	@echo "... testPerformance.i"
+	@echo "... testPerformance.s"
 	@echo "... testPosition.o"
 	@echo "... testPosition.i"
 	@echo "... testPosition.s"
