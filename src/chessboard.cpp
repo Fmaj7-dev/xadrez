@@ -4,10 +4,16 @@
 #include "util/ettune.h"
 
 #include <algorithm>
+//#include <thread>
 #include <boost/algorithm/string.hpp>
 
 Chessboard::Chessboard()
 {MEASURE
+}
+
+Chessboard::Chessboard(const Chessboard& rhs)
+{MEASURE
+    this->operator=(rhs);
 }
 
 const Chessboard& Chessboard::operator=(const Chessboard& rhs)
@@ -15,7 +21,9 @@ const Chessboard& Chessboard::operator=(const Chessboard& rhs)
     std::copy(std::begin(rhs.data_), std::end(rhs.data_), std::begin(data_));
     turn_ = rhs.turn_;
     castling_ = rhs.castling_;
-    std::copy(std::begin(rhs.enpassant_), std::end(rhs.enpassant_), std::begin(enpassant_));
+    //std::copy(std::begin(rhs.enpassant_), std::end(rhs.enpassant_), std::begin(enpassant_));
+    enpassant_[0] = rhs.enpassant_[0];
+    enpassant_[1] = rhs.enpassant_[1];
     halfCount_ = rhs.halfCount_;
     fullCount_ = rhs.fullCount_;
 
@@ -61,6 +69,8 @@ void Chessboard::reset()
     enpassant_[1] = 0;
     halfCount_ = 0;
     fullCount_ = 0;
+    //libc++abi.dylib: terminating with uncaught exception of type std::invalid_argument: stoi: no conversion
+    //pastPositions_.clear();
 }
 
 void Chessboard::importFen(const std::string& fen)
@@ -442,6 +452,8 @@ bool Chessboard::isPieceThreatened(int square) const
         return true;
     
     // threatened by bishop or queen
+    // FIXME make sure the captures are correct
+    // duplicate lambda traverse
     auto traverseBishopQueen = [&](auto lambda)
     {
         while ( validCoordinates(x_target, y_target) )
@@ -523,11 +535,8 @@ Chessboard::Piece Chessboard::makeMove( Movement& m, bool ignoreExport )
 
     if (!ignoreExport)
     {
-#if (UNDO_FEN_STRING)
-        pastPositions_.push_back( exportFen() );
-#else
+        //pastPositions_.push_back( exportFen() );
         pastPositions_.push_back( *this );  
-#endif
     }
 
     Piece piece = EMPTY_SQUARE;
@@ -610,11 +619,8 @@ void Chessboard::switchTurn()
  */
 void Chessboard::undoMove( /*Movement& m, Piece piece*/ )
 {MEASURE
-#if (UNDO_FEN_STRING)
-    importFen( pastPositions_.back() );
-#else
+    //importFen( pastPositions_.back() );
     this->operator=( pastPositions_.back() );
-#endif
     pastPositions_.pop_back();
 
     /*if ( m.type() == Movement::Type::Normal )
@@ -654,23 +660,48 @@ void Chessboard::undoMove( /*Movement& m, Piece piece*/ )
 
 void Chessboard::findVariations( Variations& variations ) const
 {MEASURE
+
+    /*std::thread pawn_thread;
+    std::thread knight_thread;
+    std::thread bishop_thread;
+    std::thread rook_thread;
+    std::thread queen_thread;
+    std::thread king_thread;*/
+
     for (int i = 0; i < 64; ++i )
     {
         if ( turn_ == WHITE_TURN )
         {
+            
             if ( data_[i] == WHITE_PAWN )
+            {
                 findPawnVariations(variations, i);
-            if ( data_[i] == WHITE_ROOK )
+                //pawn_thread = std::thread([this, &variations, &i]() { this->findPawnVariations(variations, i); });
+            }
+            else if ( data_[i] == WHITE_ROOK )
                 findRookVariations(variations, i);
-            if ( data_[i] == WHITE_KNIGHT )
+                //rook_thread = std::thread([this, &variations, &i]() { this->findRookVariations(variations, i); });
+            else if ( data_[i] == WHITE_KNIGHT )
                 findKnightVariations(variations, i);
-            if ( data_[i] == WHITE_BISHOP )
+                //knight_thread = std::thread([this, &variations, &i]() { this->findKnightVariations(variations, i); });
+            else if ( data_[i] == WHITE_BISHOP )
                 findBishopVariations(variations, i);
-            if ( data_[i] == WHITE_QUEEN )
+                //bishop_thread = std::thread([this, &variations, &i]() { this->findBishopVariations(variations, i); });
+            else if ( data_[i] == WHITE_QUEEN )
                 findQueenVariations(variations, i);
-            if ( data_[i] == WHITE_KING )
+                //queen_thread = std::thread([this, &variations, &i]() { this->findQueenVariations(variations, i); });
+            else if ( data_[i] == WHITE_KING )
                 findKingVariations(variations, i);
+                //king_thread = std::thread([this, &variations, &i]() { this->findKingVariations(variations, i); });
+
+            //if (pawn_thread.joinable()) pawn_thread.join();
+            /*if (knight_thread.joinable()) knight_thread.join();
+            if (bishop_thread.joinable()) bishop_thread.join();
+            if (rook_thread.joinable()) rook_thread.join();
+            if (queen_thread.joinable()) queen_thread.join();
+            if (king_thread.joinable()) king_thread.join();*/
         }
+        
 
         if ( turn_ == BLACK_TURN )
         {

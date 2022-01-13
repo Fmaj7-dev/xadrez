@@ -85,16 +85,16 @@ TEST_CASE("Test Performance")
                                     for ( size_t m = 0; m < v5.size(); ++m )
                                     {
                                         numVariations5++;
-                                        cb.makeMove(v5[m].movement_);
+                                        //cb.makeMove(v5[m].movement_);
                                         // sixth level
                                         {
-                                            Variations v6;
+                                            /*Variations v6;
                                             //v5[m].chessboard_.findVariations(v6);
                                             cb.findVariations(v6);
 
-                                            numVariations6 += v6.size();
+                                            numVariations6 += v6.size();*/
                                         }
-                                        cb.undoMove();
+                                        //cb.undoMove();
                                     }
                                 }
                                 cb.undoMove();

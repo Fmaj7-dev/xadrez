@@ -9,6 +9,9 @@ TEST_CASE("Test Engine")
 {
  /*   Chessboard cb;
     cb.importFen("2Q5/1k1Q4/8/6p1/1r6/6PP/2K5/8 b - - 0 68");
+
+    // fail with this:
+    //1k3b2/p1p3r1/2p2p2/3pp3/3P1pP1/2N2P2/P1P2KP1/8 b - - 3 30
     
     Variations v;
     cb.findVariations(v);

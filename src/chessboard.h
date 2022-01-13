@@ -6,6 +6,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <mutex>
 
 class Variation;
 typedef std::vector<Variation> Variations;
@@ -82,6 +83,7 @@ private:
 
 public:
     Chessboard();
+    Chessboard(const Chessboard& rhs);
     const Chessboard& operator=(const Chessboard& rhs);
     
     void initDefault();
@@ -135,11 +137,9 @@ private:
     uint8_t data_[64];
 
     // past positions
-#if (UNDO_FEN_STRING)
-    std::vector< std::string > pastPositions_;
-#else
+    // I dont know why this one is faster
+    //std::vector< std::string > pastPositions_;
     std::vector< Chessboard > pastPositions_;
-#endif
 
     // BLACK_TURN or WHITE_TURN
     char turn_;
@@ -155,6 +155,8 @@ private:
 
     // full counter
     char fullCount_;
+
+    //mutable std::mutex variationsMutex_;
 };
 
 #endif
