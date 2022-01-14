@@ -19,13 +19,15 @@ Chessboard::Chessboard(const Chessboard& rhs)
 const Chessboard& Chessboard::operator=(const Chessboard& rhs)
 {MEASURE
     std::copy(std::begin(rhs.data_), std::end(rhs.data_), std::begin(data_));
+
     turn_ = rhs.turn_;
     castling_ = rhs.castling_;
-    //std::copy(std::begin(rhs.enpassant_), std::end(rhs.enpassant_), std::begin(enpassant_));
     enpassant_[0] = rhs.enpassant_[0];
     enpassant_[1] = rhs.enpassant_[1];
     halfCount_ = rhs.halfCount_;
     fullCount_ = rhs.fullCount_;
+    whiteKingPosition_ = rhs.whiteKingPosition_;
+    blackKingPosition_ = rhs.blackKingPosition_;
 
     return *this;
 }
@@ -94,7 +96,16 @@ void Chessboard::importFen(const std::string& fen)
                 data_[insertPosition++] = EMPTY_SQUARE;
 
         else if ( isValidPiece(c) )
-            data_[insertPosition++] = c;
+        {
+            data_[insertPosition] = c;
+
+            if (c == WHITE_KING)
+                whiteKingPosition_ = insertPosition;
+            else if (c == BLACK_KING)
+                blackKingPosition_ = insertPosition;
+
+            insertPosition++;
+        }
 
         else if ( isNewLine(c) )
         {
@@ -222,7 +233,10 @@ void Chessboard::prettyPrint() const
         std::cout << 8-i << " ";
         for ( int j = 0; j < 8; ++j )
         {
-            std::cout << data_[i*8+j] << " ";
+            if (data_[i*8+j] == EMPTY_SQUARE)
+                std::cout << ". ";
+            else
+                std::cout << data_[i*8+j]<<" ";
         }
         std::cout << std::endl;
     }
@@ -318,21 +332,20 @@ bool Chessboard::isInCheck() const
 int Chessboard::findKing() const
 {MEASURE
     if ( turn_ == BLACK_TURN )
-        for (int i = 0; i < 64; ++i)
+        return blackKingPosition_;
+        /*for (int i = 0; i < 64; ++i)
         {
             if ( data_[i] == BLACK_KING )
                 return i;
-        }
+        }*/
 
     else //if ( turn_ == WHITE_TURN )
-        for (int i = 0; i < 64; ++i)
+        return whiteKingPosition_;
+        /*for (int i = 0; i < 64; ++i)
         {
             if ( data_[i] == WHITE_KING )
                 return i;
-        }
-    
-    etlog("Error: king not found");
-    return 0;
+        }*/
 }
 
 bool Chessboard::isPieceThreatened(int square) const
@@ -376,27 +389,21 @@ bool Chessboard::isPieceThreatened(int square) const
     x[7] = x_coord+1;
     y[7] = y_coord+2;
 
+    Piece pieceToSearch;
     if ( turn_ == WHITE_TURN )
-    {
-        for (int i = 0; i < 8; ++i)
-        {
-            if( validCoordinates(x[i], y[i]) && data_[x[i] + y[i]*8] == BLACK_KNIGHT )
-                return true;
-        }
+        pieceToSearch = BLACK_KNIGHT;
+    else
+        pieceToSearch = WHITE_KNIGHT;
 
-    }
-    else if (turn_ == BLACK_TURN)
-    {
-        for (int i = 0; i < 8; ++i)
-            if( validCoordinates(x[i], y[i]) && data_[x[i] + y[i]*8] == WHITE_KNIGHT )
-                return true;
-    }
+    for (int i = 0; i < 8; ++i)
+        if( validCoordinates(x[i], y[i]) && data_[x[i] + y[i]*8] == pieceToSearch )
+            return true;
 
     // threatened by rook or queen
     int x_target;
     int y_target;
 
-    auto traverse = [&](auto lambda)
+    auto traverse = [&](auto lambda, Piece piece1, Piece piece2)
     {
         while ( validCoordinates(x_target, y_target) )
         {
@@ -406,16 +413,9 @@ bool Chessboard::isPieceThreatened(int square) const
                 lambda();
             else
             {
-                if ( turn_ == WHITE_TURN )
-                {
-                    if ( data_[target_square] == BLACK_ROOK ||  data_[target_square] == BLACK_QUEEN)
-                        return true;
-                }
-                else if ( turn_ == BLACK_TURN )
-                {
-                    if ( data_[target_square] == WHITE_ROOK ||  data_[target_square] == WHITE_QUEEN)
-                        return true;
-                }
+                if ( data_[target_square] == piece1 ||  data_[target_square] == piece2)
+                    return true;
+
                 return false;
             }
         }
@@ -427,34 +427,48 @@ bool Chessboard::isPieceThreatened(int square) const
     auto move_right =   [&] () {++x_target;};
     auto move_left =    [&] () {--x_target;};
 
+    Piece pieceToSearch1;
+    Piece pieceToSearch2;
+
+    if (turn_ == WHITE_TURN)
+    {
+        pieceToSearch1 = BLACK_ROOK;
+        pieceToSearch2 = BLACK_QUEEN;
+    }
+    else
+    {
+        pieceToSearch1 = WHITE_ROOK;
+        pieceToSearch2 = WHITE_QUEEN;
+    }
+
+
     // up
     x_target = x_coord;
     y_target = y_coord-1;
-    if (traverse(move_up) )
+    if (traverse(move_up, pieceToSearch1, pieceToSearch2) )
         return true;
 
     // down
     x_target = x_coord;
     y_target = y_coord+1;
-    if (traverse(move_down) )
+    if (traverse(move_down, pieceToSearch1, pieceToSearch2) )
         return true;
 
     // right
     x_target = x_coord+1;
     y_target = y_coord;
-    if (traverse(move_right) )
+    if (traverse(move_right, pieceToSearch1, pieceToSearch2) )
         return true;
 
     // left
     x_target = x_coord-1;
     y_target = y_coord;
-    if (traverse(move_left) )
+    if (traverse(move_left, pieceToSearch1, pieceToSearch2) )
         return true;
     
     // threatened by bishop or queen
     // FIXME make sure the captures are correct
-    // duplicate lambda traverse
-    auto traverseBishopQueen = [&](auto lambda)
+    /*auto traverseBishopQueen = [&](auto lambda)
     {
         while ( validCoordinates(x_target, y_target) )
         {
@@ -478,38 +492,49 @@ bool Chessboard::isPieceThreatened(int square) const
             }
         }
         return false;
-    };
+    };*/
 
     auto move_up_left    = [&] () {--y_target; --x_target;};
     auto move_up_right   = [&] () {--y_target; ++x_target;};
     auto move_down_left  = [&] () {++y_target; --x_target;};
     auto move_down_right = [&] () {++y_target; ++x_target;};
 
+    if (turn_ == WHITE_TURN)
+    {
+        pieceToSearch1 = BLACK_BISHOP;
+        pieceToSearch2 = BLACK_QUEEN;
+    }
+    else
+    {
+        pieceToSearch1 = WHITE_BISHOP;
+        pieceToSearch2 = WHITE_QUEEN;
+    }
+
     // up left
     x_target = x_coord-1;
     y_target = y_coord-1;
-    if ( traverseBishopQueen(move_up_left) )
+    if ( traverse(move_up_left, pieceToSearch1, pieceToSearch2) )
         return true;
 
     // up right
     x_target = x_coord+1;
     y_target = y_coord-1;
-    if ( traverseBishopQueen(move_up_right) )
+    if ( traverse(move_up_right, pieceToSearch1, pieceToSearch2) )
         return true;
 
     // down left
     x_target = x_coord-1;
     y_target = y_coord+1;
-    if ( traverseBishopQueen(move_down_left) )
+    if ( traverse(move_down_left, pieceToSearch1, pieceToSearch2) )
         return true;
 
     // down left
     x_target = x_coord+1;
     y_target = y_coord+1;
-    if ( traverseBishopQueen(move_down_right) )
+    if ( traverse(move_down_right, pieceToSearch1, pieceToSearch2) )
         return true;
 
-    // threatened by pawn FIXME
+    // threatened by pawn
     if ( turn_ == WHITE_TURN )
     {
         if ( validCoordinates(x_coord-1, y_coord-1) && data_[x_coord-1 + (y_coord-1)*8] == BLACK_PAWN )
@@ -564,6 +589,11 @@ Chessboard::Piece Chessboard::makeMove( Movement& m, bool ignoreExport )
         // return captured piece or EMPTY_SQUARE if movement normal
         piece = data_[m.to().getValue()];
         data_[ m.to().getValue() ] = data_[ m.from().getValue() ];
+
+        if (data_[ m.from().getValue() ] == WHITE_KING)
+            whiteKingPosition_ = m.to().getValue();
+        else if (data_[ m.from().getValue() ] == BLACK_KING)
+            blackKingPosition_ = m.to().getValue();
     }
 
     // pawn promotion

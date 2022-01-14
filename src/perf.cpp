@@ -41,7 +41,7 @@ int main()
 
   uint32_t total_moves = 0;
 
-  perf( cb, 6, total_moves );
+  perf( cb, 5, total_moves );
 
   auto end = std::chrono::steady_clock::now();
 

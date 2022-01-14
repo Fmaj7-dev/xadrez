@@ -15,6 +15,7 @@ TEST_CASE("FEM default init")
     Chessboard cb;
     std::string default_init ("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     cb.initDefault();
+    cb.prettyPrint();
 
     std::string exported = cb.exportFen();
 

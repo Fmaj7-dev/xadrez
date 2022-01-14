@@ -133,13 +133,11 @@ private:
     void switchTurn();
 
 private:
+    // past positions
+    std::vector< Chessboard > pastPositions_;
+
     // 64 squares of the board starting top-left
     uint8_t data_[64];
-
-    // past positions
-    // I dont know why this one is faster
-    //std::vector< std::string > pastPositions_;
-    std::vector< Chessboard > pastPositions_;
 
     // BLACK_TURN or WHITE_TURN
     char turn_;
@@ -155,6 +153,9 @@ private:
 
     // full counter
     char fullCount_;
+
+    char blackKingPosition_;
+    char whiteKingPosition_;
 
     //mutable std::mutex variationsMutex_;
 };
