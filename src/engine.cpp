@@ -108,7 +108,7 @@ std::string Engine::findBestMove( uint32_t seconds )
 {MEASURE
     LINE line;
     float ab;
-    int depth = 7;
+    int depth = 6;
 
     if (chessboard_.isWhiteTurn())
         ab = alphaBetaMax(-10000, 10000, depth, chessboard_, &line);

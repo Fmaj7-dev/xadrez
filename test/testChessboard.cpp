@@ -104,6 +104,12 @@ TEST_CASE("variations")
     cb.findVariations(v5);
     REQUIRE( v5.size() == 4 );
 
+    // test white king castling. only 4 white moves are possible in this fem
+    Variations v5_2;
+    cb.importFen("rnbqkbnr/pppppppp/8/8/8/8/8/4K2R w Kkq - 0 1");
+    cb.findVariations(v5_2);
+    REQUIRE( v5_2.size() == 14 );
+
     // test white queen castling, only 5 white moves are possible in this fem
     Variations v6;
     cb.importFen("3k4/8/8/8/8/p3p2b/P3P3/R3K3 w Q - 1 1");
@@ -133,6 +139,20 @@ TEST_CASE("variations")
     cb.importFen("rnbqkbnr/ppppppp1/8/8/6Pp/8/PPPPPP1P/RNBQKBNR b KQkq g3 1 1");
     cb.findVariations(v10);
     REQUIRE( v10.size() == 23 );
+}
+
+TEST_CASE("issue applying castling move")
+{
+    Chessboard cb;
+    cb.importFen("rnbqkbnr/pppppppp/8/8/8/8/8/4K2R w Kkq - 0 1");
+    Movement m(60, 62, Movement::Type::Castling);
+    cb.makeMove(m);
+    cb.prettyPrint();
+
+    cb.importFen("rnbqkbnr/pppppppp/8/8/8/8/8/R3K3 w Qkq - 0 1");
+    Movement m1(60, 58, Movement::Type::Castling);
+    cb.makeMove(m1);
+    cb.prettyPrint();
 }
 
 TEST_CASE("movements")

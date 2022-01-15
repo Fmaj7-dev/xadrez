@@ -13,6 +13,9 @@ TEST_CASE("Test Engine")
     // fail with this:
     //1k3b2/p1p3r1/2p2p2/3pp3/3P1pP1/2N2P2/P1P2KP1/8 b - - 3 30
     
+    // null move with this:
+    //2r5/4ppk1/p1P5/8/P2p4/8/q7/4K3 b - - 1 57
+    
     Variations v;
     cb.findVariations(v);
 

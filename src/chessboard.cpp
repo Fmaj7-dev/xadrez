@@ -226,11 +226,12 @@ std::string Chessboard::exportFen() const
 
 void Chessboard::prettyPrint() const
 {MEASURE
-    std::cout << "  a b c d e f g h" << std::endl;
+    std::cout << "\n" << std::endl;
+    std::cout << "  _______________" << std::endl;
 
     for ( int i = 0; i < 8; ++i )
     {
-        std::cout << 8-i << " ";
+        std::cout << 8-i << "|";
         for ( int j = 0; j < 8; ++j )
         {
             if (data_[i*8+j] == EMPTY_SQUARE)
@@ -238,8 +239,10 @@ void Chessboard::prettyPrint() const
             else
                 std::cout << data_[i*8+j]<<" ";
         }
-        std::cout << std::endl;
+        std::cout << "|"<<std::endl;
     }
+    std::cout<<"  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯"<<std::endl;
+    std::cout<<"  a b c d e f g h"<<std::endl;
 }
 
 float Chessboard::evaluation() const
@@ -294,7 +297,10 @@ void Chessboard::appendVariation(Variations& variations, int from, int to, Movem
     Variation variation(movement);
     
 #if (UNDO_FEN_STRING)
-    Chessboard vchessboard_ = *this;
+    // optimization: avoid creating each time
+    static Chessboard vchessboard_;
+    vchessboard_ = *this;
+
     vchessboard_.makeMove( movement, true );
 
     // undo the switch makeMove did, so that we can really test if the king is threatened
@@ -302,6 +308,12 @@ void Chessboard::appendVariation(Variations& variations, int from, int to, Movem
 
     if (!vchessboard_.isInCheck())
         variations.push_back( variation );
+
+    /*makeMove( movement, false);
+    switchTurn();
+    if (!isInCheck())
+        variations.push_back( variation );
+    undoMove();*/
 #else
     variation.chessboard_ = *this;
     variation.chessboard_.makeMove( movement, true );
@@ -309,17 +321,6 @@ void Chessboard::appendVariation(Variations& variations, int from, int to, Movem
     if (!variation.chessboard_.isInCheck())
         variations.push_back( variation );
 #endif
-
-
-
-
-    /*int kingPosition = vchessboard_.findKing();
-
-    // only append it if the king is not threatened
-    if ( !vchessboard_.isKingThreatened( kingPosition ) )
-    {
-        variations.push_back( variation );
-    }*/
 }
 
 bool Chessboard::isInCheck() const
@@ -333,19 +334,8 @@ int Chessboard::findKing() const
 {MEASURE
     if ( turn_ == BLACK_TURN )
         return blackKingPosition_;
-        /*for (int i = 0; i < 64; ++i)
-        {
-            if ( data_[i] == BLACK_KING )
-                return i;
-        }*/
-
-    else //if ( turn_ == WHITE_TURN )
+    else 
         return whiteKingPosition_;
-        /*for (int i = 0; i < 64; ++i)
-        {
-            if ( data_[i] == WHITE_KING )
-                return i;
-        }*/
 }
 
 bool Chessboard::isPieceThreatened(int square) const
@@ -552,6 +542,33 @@ bool Chessboard::isPieceThreatened(int square) const
 
     // FIXME: we are not checking minimum distance to the other king
 
+    /*if (blackKingPosition_ - 9 == whiteKingPosition_ ||
+        blackKingPosition_ - 8 == whiteKingPosition_ ||
+        blackKingPosition_ - 7 == whiteKingPosition_ ||
+        blackKingPosition_ - 1 == whiteKingPosition_ ||
+        blackKingPosition_ + 1 == whiteKingPosition_ ||
+        blackKingPosition_ + 7 == whiteKingPosition_ ||
+        blackKingPosition_ + 8 == whiteKingPosition_ ||
+        blackKingPosition_ + 9 == whiteKingPosition_)
+        return true;*/
+
+    // check king
+    Piece pieceToCheck;
+    if (turn_ == WHITE_TURN)
+        pieceToCheck = BLACK_KING;
+    else
+        pieceToCheck = WHITE_KING;
+
+    if ( (validCoordinates(x_coord-1, y_coord-1) && data_[x_coord-1 + (y_coord-1)*8] == pieceToCheck) ||
+         (validCoordinates(x_coord-1, y_coord) && data_[x_coord-1 + (y_coord)*8] == pieceToCheck) ||
+         (validCoordinates(x_coord-1, y_coord+1) && data_[x_coord-1 + (y_coord+1)*8] == pieceToCheck) ||
+         (validCoordinates(x_coord+1, y_coord-1) && data_[x_coord+1 + (y_coord-1)*8] == pieceToCheck) ||
+         (validCoordinates(x_coord+1, y_coord) && data_[x_coord+1 + (y_coord)*8] == pieceToCheck) ||
+         (validCoordinates(x_coord+1, y_coord+1) && data_[x_coord+1 + (y_coord+1)*8] == pieceToCheck) ||
+         (validCoordinates(x_coord, y_coord-1) && data_[x_coord + (y_coord-1)*8] == pieceToCheck) ||
+         (validCoordinates(x_coord, y_coord+1) && data_[x_coord + (y_coord+1)*8] == pieceToCheck) )
+        return true;
+
     return false;
 }
 
@@ -591,9 +608,31 @@ Chessboard::Piece Chessboard::makeMove( Movement& m, bool ignoreExport )
         data_[ m.to().getValue() ] = data_[ m.from().getValue() ];
 
         if (data_[ m.from().getValue() ] == WHITE_KING)
+        {
+            castling_ &= ~static_cast<uint8_t>(CASTLING::WHITE_KING);
+            castling_ &= ~static_cast<uint8_t>(CASTLING::WHITE_QUEEN);
             whiteKingPosition_ = m.to().getValue();
+        }
         else if (data_[ m.from().getValue() ] == BLACK_KING)
+        {
+            castling_ &= ~static_cast<uint8_t>(CASTLING::BLACK_KING);
+            castling_ &= ~static_cast<uint8_t>(CASTLING::BLACK_QUEEN);
             blackKingPosition_ = m.to().getValue();
+        }
+        else if (data_[ m.from().getValue() ] == WHITE_ROOK)
+        {
+            if (m.from().getValue() == 56)
+                castling_ &= ~static_cast<uint8_t>(CASTLING::WHITE_QUEEN);
+            else if (m.from().getValue() == 63)
+                castling_ &= ~static_cast<uint8_t>(CASTLING::WHITE_KING);
+        }
+        else if (data_[ m.from().getValue() ] == BLACK_ROOK)
+        {
+            if (m.from().getValue() == 0)
+                castling_ &= ~static_cast<uint8_t>(CASTLING::BLACK_QUEEN);
+            else if (m.from().getValue() == 7)
+                castling_ &= ~static_cast<uint8_t>(CASTLING::BLACK_KING);
+        }
     }
 
     // pawn promotion
@@ -616,6 +655,49 @@ Chessboard::Piece Chessboard::makeMove( Movement& m, bool ignoreExport )
             enpassant_[1] = to[1] + 1;
         if ( turn_ == WHITE_TURN )
             enpassant_[1] = to[1] - 1;
+    }
+    else if ( m.type() == Movement::Type::Castling )
+    {
+        if ( m.to().getValue() == 62 )
+        {
+            castling_ &= ~static_cast<uint8_t>(CASTLING::WHITE_KING);
+            castling_ &= ~static_cast<uint8_t>(CASTLING::WHITE_QUEEN);
+
+            data_[60] = EMPTY_SQUARE;
+            data_[62] = WHITE_KING;
+            data_[63] = EMPTY_SQUARE;
+            data_[61] = WHITE_ROOK;
+        }
+        else if ( m.to().getValue() == 58 )
+        {
+            castling_ &= ~static_cast<uint8_t>(CASTLING::WHITE_KING);
+            castling_ &= ~static_cast<uint8_t>(CASTLING::WHITE_QUEEN);
+
+            data_[60] = EMPTY_SQUARE;
+            data_[58] = WHITE_KING;
+            data_[56] = EMPTY_SQUARE;
+            data_[59] = WHITE_ROOK;
+        }
+        else if ( m.to().getValue() == 6 )
+        {
+            castling_ &= ~static_cast<uint8_t>(CASTLING::BLACK_KING);
+            castling_ &= ~static_cast<uint8_t>(CASTLING::BLACK_QUEEN);
+
+            data_[4] = EMPTY_SQUARE;
+            data_[6] = BLACK_KING;
+            data_[7] = EMPTY_SQUARE;
+            data_[5] = BLACK_ROOK;
+        }
+        else if ( m.to().getValue() == 2 )
+        {
+            castling_ &= ~static_cast<uint8_t>(CASTLING::BLACK_KING);
+            castling_ &= ~static_cast<uint8_t>(CASTLING::BLACK_QUEEN);
+
+            data_[4] = EMPTY_SQUARE;
+            data_[2] = BLACK_KING;
+            data_[0] = EMPTY_SQUARE;
+            data_[3] = BLACK_ROOK;
+        }
     }
 
     // reset en passant values, if not double move of pawn
@@ -1004,7 +1086,7 @@ void Chessboard::findRookVariations(Variations& variations, int square ) const
     traverse(move_left);
 }
 
-void Chessboard::findBishopVariations(Variations& variations, int square ) const 
+void Chessboard::findBishopVariations(Variations& variations, int square ) const
 {MEASURE
     int x_coord = square % 8;
     int y_coord = square / 8;
@@ -1140,12 +1222,12 @@ void Chessboard::findKingVariations(Variations& variations, int square ) const
         if ( castling_ & static_cast<uint8_t>(CASTLING::WHITE_KING))
         {
             if ( !isSquareOccupied(61) && !isSquareOccupied(62) && !isPieceThreatened(61) && !isPieceThreatened(62) )
-                appendVariation( variations, 60, 62 );
+                appendVariation( variations, 60, 62, Movement::Type::Castling );
         }
         if ( castling_ & static_cast<uint8_t>(CASTLING::WHITE_QUEEN))
         {
-            if ( !isSquareOccupied(58) && !isSquareOccupied(59) && !isPieceThreatened(58) && !isPieceThreatened(59) )
-                appendVariation( variations, 60, 58 );
+            if ( !isSquareOccupied(58) && !isSquareOccupied(59) && !isSquareOccupied(57) && !isPieceThreatened(58) && !isPieceThreatened(59) )
+                appendVariation( variations, 60, 58, Movement::Type::Castling );
         }
     }
     else
@@ -1153,12 +1235,12 @@ void Chessboard::findKingVariations(Variations& variations, int square ) const
         if (castling_ & static_cast<uint8_t>(CASTLING::BLACK_KING) )
         {
             if ( !isSquareOccupied(5) && !isSquareOccupied(6) && !isPieceThreatened(5) && !isPieceThreatened(6) )
-                appendVariation( variations, 4, 6 );
+                appendVariation( variations, 4, 6, Movement::Type::Castling );
         }
         if (castling_ & static_cast<uint8_t>(CASTLING::BLACK_QUEEN) )
         {
-            if ( !isSquareOccupied(2) && !isSquareOccupied(3) && !isPieceThreatened(2) && !isPieceThreatened(3) )
-                appendVariation( variations, 4, 2 );
+            if ( !isSquareOccupied(2) && !isSquareOccupied(3) && !isSquareOccupied(3) && !isPieceThreatened(2) && !isPieceThreatened(3) )
+                appendVariation( variations, 4, 2, Movement::Type::Castling );
         }
    } 
 }

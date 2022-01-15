@@ -12,7 +12,7 @@ public:
     {
         Normal,
         DoublePawnStep,
-        //Castling,
+        Castling,
         Promotion,
         EnPassantCapture
     };
