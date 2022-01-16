@@ -607,6 +607,19 @@ Chessboard::Piece Chessboard::makeMove( Movement& m, bool ignoreExport )
         piece = data_[m.to().getValue()];
         data_[ m.to().getValue() ] = data_[ m.from().getValue() ];
 
+        // make sure castling rights are lost if another piece is placed on rook squares
+        // this is to avoid a corner case: if our rook is captured, but we promote another
+        // pawn to a rook, and then move that rook to the square where the other rook was captured,
+        // the king would be able to castle, but that is not valid
+        if (m.to().getValue() == A1)
+            castling_ &=  ~static_cast<uint8_t>(CASTLING::WHITE_QUEEN);
+        else if (m.to().getValue() == H1)
+            castling_ &=  ~static_cast<uint8_t>(CASTLING::WHITE_KING);
+        else if (m.to().getValue() == A8)
+            castling_ &=  ~static_cast<uint8_t>(CASTLING::BLACK_QUEEN);
+        else if (m.to().getValue() == H8)
+            castling_ &=  ~static_cast<uint8_t>(CASTLING::BLACK_KING);
+
         if (data_[ m.from().getValue() ] == WHITE_KING)
         {
             castling_ &= ~static_cast<uint8_t>(CASTLING::WHITE_KING);
@@ -663,6 +676,8 @@ Chessboard::Piece Chessboard::makeMove( Movement& m, bool ignoreExport )
             castling_ &= ~static_cast<uint8_t>(CASTLING::WHITE_KING);
             castling_ &= ~static_cast<uint8_t>(CASTLING::WHITE_QUEEN);
 
+            whiteKingPosition_ = 62;
+
             data_[60] = EMPTY_SQUARE;
             data_[62] = WHITE_KING;
             data_[63] = EMPTY_SQUARE;
@@ -672,6 +687,8 @@ Chessboard::Piece Chessboard::makeMove( Movement& m, bool ignoreExport )
         {
             castling_ &= ~static_cast<uint8_t>(CASTLING::WHITE_KING);
             castling_ &= ~static_cast<uint8_t>(CASTLING::WHITE_QUEEN);
+
+            whiteKingPosition_ = 58;
 
             data_[60] = EMPTY_SQUARE;
             data_[58] = WHITE_KING;
@@ -683,6 +700,8 @@ Chessboard::Piece Chessboard::makeMove( Movement& m, bool ignoreExport )
             castling_ &= ~static_cast<uint8_t>(CASTLING::BLACK_KING);
             castling_ &= ~static_cast<uint8_t>(CASTLING::BLACK_QUEEN);
 
+            blackKingPosition_ = 6;
+
             data_[4] = EMPTY_SQUARE;
             data_[6] = BLACK_KING;
             data_[7] = EMPTY_SQUARE;
@@ -692,6 +711,8 @@ Chessboard::Piece Chessboard::makeMove( Movement& m, bool ignoreExport )
         {
             castling_ &= ~static_cast<uint8_t>(CASTLING::BLACK_KING);
             castling_ &= ~static_cast<uint8_t>(CASTLING::BLACK_QUEEN);
+
+            blackKingPosition_ = 2;
 
             data_[4] = EMPTY_SQUARE;
             data_[2] = BLACK_KING;
@@ -1219,27 +1240,31 @@ void Chessboard::findKingVariations(Variations& variations, int square ) const
     // castling
     if ( turn_ == WHITE_TURN )
     {
-        if ( castling_ & static_cast<uint8_t>(CASTLING::WHITE_KING))
+        if ( castling_ & static_cast<uint8_t>(CASTLING::WHITE_KING) && data_[H1] == WHITE_ROOK)
         {
-            if ( !isSquareOccupied(61) && !isSquareOccupied(62) && !isPieceThreatened(61) && !isPieceThreatened(62) )
+            if ( !isSquareOccupied(F1) && !isSquareOccupied(G1) && 
+                 !isPieceThreatened(E1) && !isPieceThreatened(F1) && !isPieceThreatened(G1))
                 appendVariation( variations, 60, 62, Movement::Type::Castling );
         }
-        if ( castling_ & static_cast<uint8_t>(CASTLING::WHITE_QUEEN))
+        if ( castling_ & static_cast<uint8_t>(CASTLING::WHITE_QUEEN) && data_[A1] == WHITE_ROOK)
         {
-            if ( !isSquareOccupied(58) && !isSquareOccupied(59) && !isSquareOccupied(57) && !isPieceThreatened(58) && !isPieceThreatened(59) )
+            if ( !isSquareOccupied(B1) && !isSquareOccupied(C1) && !isSquareOccupied(D1) && 
+                 !isPieceThreatened(C1) && !isPieceThreatened(D1) &&  !isPieceThreatened(E1))
                 appendVariation( variations, 60, 58, Movement::Type::Castling );
         }
     }
     else
     {
-        if (castling_ & static_cast<uint8_t>(CASTLING::BLACK_KING) )
+        if (castling_ & static_cast<uint8_t>(CASTLING::BLACK_KING) && data_[H8] == BLACK_ROOK)
         {
-            if ( !isSquareOccupied(5) && !isSquareOccupied(6) && !isPieceThreatened(5) && !isPieceThreatened(6) )
+            if ( !isSquareOccupied(F8) && !isSquareOccupied(G8) && 
+                 !isPieceThreatened(E8) && !isPieceThreatened(F8) && !isPieceThreatened(G8))
                 appendVariation( variations, 4, 6, Movement::Type::Castling );
         }
-        if (castling_ & static_cast<uint8_t>(CASTLING::BLACK_QUEEN) )
+        if (castling_ & static_cast<uint8_t>(CASTLING::BLACK_QUEEN) && data_ [A8] == BLACK_ROOK)
         {
-            if ( !isSquareOccupied(2) && !isSquareOccupied(3) && !isSquareOccupied(3) && !isPieceThreatened(2) && !isPieceThreatened(3) )
+            if ( !isSquareOccupied(B8) && !isSquareOccupied(C8) && !isSquareOccupied(D8) && 
+                 !isPieceThreatened(C8) && !isPieceThreatened(D8) &&  !isPieceThreatened(E8))
                 appendVariation( variations, 4, 2, Movement::Type::Castling );
         }
    } 

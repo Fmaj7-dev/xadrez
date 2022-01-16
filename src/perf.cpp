@@ -18,9 +18,10 @@ void perf( Chessboard& cb, int depth, uint32_t& total_moves )
 
     for (auto& v : v)
     {
+      /*std::cout<<cb.exportFen()<<" ->";
       cb.makeMove(v.movement_);
-      std::cout<<v.movement_.str()<<" "<<cb.exportFen()<<std::endl;
-      cb.undoMove();
+      std::cout<<v.movement_.str()<<" -> "<<cb.exportFen()<<std::endl;
+      cb.undoMove();*/
     }
     return;
   }
