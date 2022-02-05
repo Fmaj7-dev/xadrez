@@ -1,9 +1,9 @@
-#include "catch.hpp"
 #include "chessboard.h"
 #include "variation.h"
 
 #include <iostream>
 #include <chrono>
+#include <catch2/catch_amalgamated.hpp>
 
 void perf( Chessboard& cb, int depth, uint64_t& total_moves )
 {

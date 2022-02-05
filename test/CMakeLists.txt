@@ -22,8 +22,11 @@ if(Boost_FOUND)
                 #testPerformance.cpp
                 testEngine.cpp
                 #testettune.cpp
+                ../dependencies/catch2/catch_amalgamated.cpp
                 )
 endif()
+
+include_directories(../dependencies)
 
 #target_link_libraries(check render graph ui math "-framework GLUT -framework OpenGl")
 install(TARGETS check DESTINATION build)

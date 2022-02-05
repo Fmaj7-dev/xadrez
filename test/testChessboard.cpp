@@ -1,6 +1,6 @@
 #define CATCH_CONFIG_MAIN
 
-#include "catch.hpp"
+#include <catch2/catch_amalgamated.hpp>
 #include "chessboard.h"
 #include "variation.h"
 #include "util/log.h"

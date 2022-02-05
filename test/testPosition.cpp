@@ -1,6 +1,6 @@
-#include "catch.hpp"
 #include "position.h"
 #include <iostream>
+#include <catch2/catch_amalgamated.hpp>
 
 TEST_CASE("Test Positions")
 {

@@ -1,9 +1,9 @@
 #include "engine.h"
 #include "variation.h"
-#include "catch.hpp"
 
 #include <iostream>
 #include <vector>
+#include <catch2/catch_amalgamated.hpp>
 
 TEST_CASE("Test Engine")
 {

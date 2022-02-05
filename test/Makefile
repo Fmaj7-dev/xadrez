@@ -171,6 +171,33 @@ check/fast:
 	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/build
 .PHONY : check/fast
 
+__/dependencies/catch2/catch_amalgamated.o: __/dependencies/catch2/catch_amalgamated.cpp.o
+
+.PHONY : __/dependencies/catch2/catch_amalgamated.o
+
+# target to build an object file
+__/dependencies/catch2/catch_amalgamated.cpp.o:
+	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/__/dependencies/catch2/catch_amalgamated.cpp.o
+.PHONY : __/dependencies/catch2/catch_amalgamated.cpp.o
+
+__/dependencies/catch2/catch_amalgamated.i: __/dependencies/catch2/catch_amalgamated.cpp.i
+
+.PHONY : __/dependencies/catch2/catch_amalgamated.i
+
+# target to preprocess a source file
+__/dependencies/catch2/catch_amalgamated.cpp.i:
+	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/__/dependencies/catch2/catch_amalgamated.cpp.i
+.PHONY : __/dependencies/catch2/catch_amalgamated.cpp.i
+
+__/dependencies/catch2/catch_amalgamated.s: __/dependencies/catch2/catch_amalgamated.cpp.s
+
+.PHONY : __/dependencies/catch2/catch_amalgamated.s
+
+# target to generate assembly for a file
+__/dependencies/catch2/catch_amalgamated.cpp.s:
+	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/__/dependencies/catch2/catch_amalgamated.cpp.s
+.PHONY : __/dependencies/catch2/catch_amalgamated.cpp.s
+
 __/src/chessboard.o: __/src/chessboard.cpp.o
 
 .PHONY : __/src/chessboard.o
@@ -454,6 +481,9 @@ help:
 	@echo "... check"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
+	@echo "... __/dependencies/catch2/catch_amalgamated.o"
+	@echo "... __/dependencies/catch2/catch_amalgamated.i"
+	@echo "... __/dependencies/catch2/catch_amalgamated.s"
 	@echo "... __/src/chessboard.o"
 	@echo "... __/src/chessboard.i"
 	@echo "... __/src/chessboard.s"

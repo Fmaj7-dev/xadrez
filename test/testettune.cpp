@@ -1,8 +1,8 @@
-#include "catch.hpp"
 #include "util/ettune.h"
 
 #include <thread>
 #include <chrono>
+#include <catch2/catch_amalgamated.hpp>
 
 void sleep01()
 {MEASURE
