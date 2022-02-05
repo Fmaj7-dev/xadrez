@@ -360,6 +360,33 @@ testChessboard.cpp.s:
 	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/testChessboard.cpp.s
 .PHONY : testChessboard.cpp.s
 
+testEngine.o: testEngine.cpp.o
+
+.PHONY : testEngine.o
+
+# target to build an object file
+testEngine.cpp.o:
+	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/testEngine.cpp.o
+.PHONY : testEngine.cpp.o
+
+testEngine.i: testEngine.cpp.i
+
+.PHONY : testEngine.i
+
+# target to preprocess a source file
+testEngine.cpp.i:
+	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/testEngine.cpp.i
+.PHONY : testEngine.cpp.i
+
+testEngine.s: testEngine.cpp.s
+
+.PHONY : testEngine.s
+
+# target to generate assembly for a file
+testEngine.cpp.s:
+	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/testEngine.cpp.s
+.PHONY : testEngine.cpp.s
+
 testMovement.o: testMovement.cpp.o
 
 .PHONY : testMovement.o
@@ -387,33 +414,6 @@ testMovement.cpp.s:
 	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/testMovement.cpp.s
 .PHONY : testMovement.cpp.s
 
-testPerformance.o: testPerformance.cpp.o
-
-.PHONY : testPerformance.o
-
-# target to build an object file
-testPerformance.cpp.o:
-	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/testPerformance.cpp.o
-.PHONY : testPerformance.cpp.o
-
-testPerformance.i: testPerformance.cpp.i
-
-.PHONY : testPerformance.i
-
-# target to preprocess a source file
-testPerformance.cpp.i:
-	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/testPerformance.cpp.i
-.PHONY : testPerformance.cpp.i
-
-testPerformance.s: testPerformance.cpp.s
-
-.PHONY : testPerformance.s
-
-# target to generate assembly for a file
-testPerformance.cpp.s:
-	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/testPerformance.cpp.s
-.PHONY : testPerformance.cpp.s
-
 testPosition.o: testPosition.cpp.o
 
 .PHONY : testPosition.o
@@ -440,33 +440,6 @@ testPosition.s: testPosition.cpp.s
 testPosition.cpp.s:
 	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/testPosition.cpp.s
 .PHONY : testPosition.cpp.s
-
-testettune.o: testettune.cpp.o
-
-.PHONY : testettune.o
-
-# target to build an object file
-testettune.cpp.o:
-	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/testettune.cpp.o
-.PHONY : testettune.cpp.o
-
-testettune.i: testettune.cpp.i
-
-.PHONY : testettune.i
-
-# target to preprocess a source file
-testettune.cpp.i:
-	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/testettune.cpp.i
-.PHONY : testettune.cpp.i
-
-testettune.s: testettune.cpp.s
-
-.PHONY : testettune.s
-
-# target to generate assembly for a file
-testettune.cpp.s:
-	cd /Users/enrique/projects/xadrez && $(MAKE) -f test/CMakeFiles/check.dir/build.make test/CMakeFiles/check.dir/testettune.cpp.s
-.PHONY : testettune.cpp.s
 
 # Help Target
 help:
@@ -502,18 +475,15 @@ help:
 	@echo "... testChessboard.o"
 	@echo "... testChessboard.i"
 	@echo "... testChessboard.s"
+	@echo "... testEngine.o"
+	@echo "... testEngine.i"
+	@echo "... testEngine.s"
 	@echo "... testMovement.o"
 	@echo "... testMovement.i"
 	@echo "... testMovement.s"
-	@echo "... testPerformance.o"
-	@echo "... testPerformance.i"
-	@echo "... testPerformance.s"
 	@echo "... testPosition.o"
 	@echo "... testPosition.i"
 	@echo "... testPosition.s"
-	@echo "... testettune.o"
-	@echo "... testettune.i"
-	@echo "... testettune.s"
 .PHONY : help
 
 
