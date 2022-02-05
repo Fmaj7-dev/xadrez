@@ -5,118 +5,60 @@
 #include <iostream>
 #include <chrono>
 
+void perf( Chessboard& cb, int depth, uint64_t& total_moves )
+{
+  Variations v;
+  v.reserve(15);
+
+  cb.findVariations(v);
+
+  if (depth == 1)
+  {
+    total_moves += v.size();
+    return;
+  }
+
+  for (auto& v : v)
+  {
+    cb.makeMove( v.movement_ );
+  
+    if (depth > 0)  
+      perf( cb, depth - 1, total_moves);
+
+    cb.undoMove();
+  }
+}
+
+  // from https://www.chessprogramming.org/Perft_Results
 TEST_CASE("Test Performance")
 {
-    auto start = std::chrono::steady_clock::now();
-
     Chessboard cb;
     cb.initDefault();
 
-    //kiwipete
-    //cb.importFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
+    uint64_t total_moves;
 
-    //
-    //cb.importFen("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1");
+    // position 1, depth 1
+    total_moves = 0;
+    perf( cb, 1, total_moves );
+    REQUIRE(total_moves == 20);
 
-    //
-    //cb.importFen("r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ");
+    // position 1, depth 2
+    total_moves = 0;
+    perf( cb, 2, total_moves );
+    REQUIRE(total_moves == 400);
 
-    Variations v;
-    cb.findVariations(v);
+    // position 1, depth 3
+    total_moves = 0;
+    perf( cb, 3, total_moves );
+    REQUIRE(total_moves == 8902);
 
-    unsigned int numVariations1 = 0;
-    unsigned int numVariations2 = 0;
-    unsigned int numVariations3 = 0;
-    unsigned int numVariations4 = 0;
-    unsigned int numVariations5 = 0;
-    unsigned int numVariations6 = 0;
-    unsigned int numVariations7 = 0;
+    // position 1, depth 4
+    total_moves = 0;
+    perf( cb, 4, total_moves );
+    REQUIRE(total_moves == 197281);
 
-    //printVariations(v);
-
-    for( size_t i = 0; i < v.size(); ++i)
-    {
-        numVariations1++;
-        //float neval = v[i].chessboard_.evaluation();
-        cb.makeMove(v[i].movement_);
-        // second level variations
-        {
-            Variations v2;
-            //v[i].chessboard_.findVariations(v2);
-            cb.findVariations(v2);
-
-            for ( size_t j = 0; j < v2.size(); ++j )
-            {
-                numVariations2++;
-                //std::cout<<v2[j].chessboard_.exportFen()<<std::endl;
-                cb.makeMove(v2[j].movement_);   
-                // third level variations
-                {
-                    Variations v3;
-                    //v2[j].chessboard_.findVariations(v3);
-                    cb.findVariations(v3);
-
-                    for ( size_t k = 0; k < v3.size(); ++k )
-                    {
-                        numVariations3++;
-                        cb.makeMove(v3[k].movement_);
-                        // fourth level
-                        {
-                            Variations v4;
-                            //v3[k].chessboard_.findVariations(v4);
-                            cb.findVariations(v4);
-
-                            for ( size_t l = 0; l < v4.size(); ++l )
-                            {
-                                numVariations4++;
-                                cb.makeMove(v4[l].movement_);
-                                // fifth level
-                                {
-                                    Variations v5;
-                                    //v4[l].chessboard_.findVariations(v5);
-                                    cb.findVariations(v5);
-
-                                    /*if (v5.empty())
-                                    {
-                                        std::cout<<"checkmate level 5"<<std::endl;
-                                        //std::cout<<v4[l].chessboard_.exportFen()<<std::endl;
-                                    }*/
-
-                                    for ( size_t m = 0; m < v5.size(); ++m )
-                                    {
-                                        numVariations5++;
-                                        //cb.makeMove(v5[m].movement_);
-                                        // sixth level
-                                        {
-                                            /*Variations v6;
-                                            //v5[m].chessboard_.findVariations(v6);
-                                            cb.findVariations(v6);
-
-                                            numVariations6 += v6.size();*/
-                                        }
-                                        //cb.undoMove();
-                                    }
-                                }
-                                cb.undoMove();
-                            }
-                        }
-                        cb.undoMove();
-                    }
-                }
-                cb.undoMove();
-            }
-        } 
-        cb.undoMove();
-    }
-    auto end = std::chrono::steady_clock::now();
-    std::cout << "Elapsed time in milliseconds: "
-        << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
-        << " ms" << std::endl;
-
-    std::cout << "Number of variations 1: " << numVariations1 << std::endl;
-    std::cout << "Number of variations 2: " << numVariations2 << std::endl;
-    std::cout << "Number of variations 3: " << numVariations3 << std::endl;
-    std::cout << "Number of variations 4: " << numVariations4 << std::endl;
-    std::cout << "Number of variations 5: " << numVariations5 << std::endl;
-    std::cout << "Number of variations 6: " << numVariations6 << std::endl;
+    // position 1, depth 5
+    total_moves = 0;
+    perf( cb, 5, total_moves );
+    REQUIRE(total_moves == 4865609);
 }

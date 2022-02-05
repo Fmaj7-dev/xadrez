@@ -293,8 +293,6 @@ void Chessboard::appendPromotion(Variations& variations, int from, int to, Playe
 void Chessboard::appendVariation(Variations& variations, int from, int to, Movement::Type type, char promotion) const
 {MEASURE
     Movement movement(from, to, type, promotion);
-
-    Variation variation(movement);
     
 #if (UNDO_FEN_STRING)
     // optimization: avoid creating each time
@@ -307,13 +305,11 @@ void Chessboard::appendVariation(Variations& variations, int from, int to, Movem
     vchessboard_.switchTurn();
 
     if (!vchessboard_.isInCheck())
+    {
+        Variation variation(movement);
         variations.push_back( variation );
+    }
 
-    /*makeMove( movement, false);
-    switchTurn();
-    if (!isInCheck())
-        variations.push_back( variation );
-    undoMove();*/
 #else
     variation.chessboard_ = *this;
     variation.chessboard_.makeMove( movement, true );
@@ -457,32 +453,6 @@ bool Chessboard::isPieceThreatened(int square) const
         return true;
     
     // threatened by bishop or queen
-    // FIXME make sure the captures are correct
-    /*auto traverseBishopQueen = [&](auto lambda)
-    {
-        while ( validCoordinates(x_target, y_target) )
-        {
-            int target_square = y_target*8 + x_target;
-
-            if ( !isSquareOccupied( target_square ) )
-                lambda();
-            else
-            {
-                if ( turn_ == WHITE_TURN )
-                {
-                    if ( data_[target_square] == BLACK_BISHOP ||  data_[target_square] == BLACK_QUEEN)
-                        return true;
-                }
-                else if ( turn_ == BLACK_TURN )
-                {
-                    if ( data_[target_square] == WHITE_BISHOP ||  data_[target_square] == WHITE_QUEEN)
-                        return true;
-                }
-                break;
-            }
-        }
-        return false;
-    };*/
 
     auto move_up_left    = [&] () {--y_target; --x_target;};
     auto move_up_right   = [&] () {--y_target; ++x_target;};
@@ -539,18 +509,6 @@ bool Chessboard::isPieceThreatened(int square) const
         if ( validCoordinates(x_coord+1, y_coord+1) && data_[x_coord+1 + (y_coord+1)*8] == WHITE_PAWN )
             return true;
     }
-
-    // FIXME: we are not checking minimum distance to the other king
-
-    /*if (blackKingPosition_ - 9 == whiteKingPosition_ ||
-        blackKingPosition_ - 8 == whiteKingPosition_ ||
-        blackKingPosition_ - 7 == whiteKingPosition_ ||
-        blackKingPosition_ - 1 == whiteKingPosition_ ||
-        blackKingPosition_ + 1 == whiteKingPosition_ ||
-        blackKingPosition_ + 7 == whiteKingPosition_ ||
-        blackKingPosition_ + 8 == whiteKingPosition_ ||
-        blackKingPosition_ + 9 == whiteKingPosition_)
-        return true;*/
 
     // check king
     Piece pieceToCheck;

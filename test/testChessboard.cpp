@@ -15,7 +15,7 @@ TEST_CASE("FEM default init")
     Chessboard cb;
     std::string default_init ("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     cb.initDefault();
-    cb.prettyPrint();
+    //cb.prettyPrint();
 
     std::string exported = cb.exportFen();
 
@@ -147,12 +147,12 @@ TEST_CASE("issue applying castling move")
     cb.importFen("rnbqkbnr/pppppppp/8/8/8/8/8/4K2R w Kkq - 0 1");
     Movement m(60, 62, Movement::Type::Castling);
     cb.makeMove(m);
-    cb.prettyPrint();
+    //cb.prettyPrint();
 
     cb.importFen("rnbqkbnr/pppppppp/8/8/8/8/8/R3K3 w Qkq - 0 1");
     Movement m1(60, 58, Movement::Type::Castling);
     cb.makeMove(m1);
-    cb.prettyPrint();
+    //cb.prettyPrint();
 }
 
 TEST_CASE("movements")

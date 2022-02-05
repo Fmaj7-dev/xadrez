@@ -30,15 +30,19 @@ float alphaBetaMax(float alpha, float beta, float depthleft, Chessboard& chessbo
 
     Variations variations;
     chessboard.findVariations(variations);
+
+    if (variations.empty())
+    {
+        //pline->cmove = 0;
+        return 100000; //chessboard.evaluation();
+    }
+
     for (Variation v : variations)
     {
-#if (UNDO_FEN_STRING)        
         chessboard.makeMove(v.movement_);
         float score = alphaBetaMin(alpha, beta, depthleft - 1, chessboard, &line);
         chessboard.undoMove();
-#else
-        float score = alphaBetaMin(alpha, beta, depthleft - 1, v.chessboard_, &line);
-#endif
+
         if (score >= beta)
             return beta;
         if (score > alpha)
@@ -59,21 +63,25 @@ float alphaBetaMin(float alpha, float beta, float depthleft, Chessboard& chessbo
     //std::cout<<"alphaBetaMin("<<alpha<<", "<<beta<<", "<<depthleft<<")"<<std::endl;
     if (depthleft == 0)
     {
-        pline->cmove = 0;
-        return chessboard.evaluation();
+        //pline->cmove = 0;
+        return -100000; //chessboard.evaluation();
     }
 
     Variations variations;
     chessboard.findVariations(variations);
+
+    if (variations.empty())
+    {
+        pline->cmove = 0;
+        return chessboard.evaluation();
+    }
+
     for (Variation v : variations)
     {
-#if (UNDO_FEN_STRING)
         chessboard.makeMove(v.movement_);
         float score = alphaBetaMax(alpha, beta, depthleft - 1, chessboard, &line);
         chessboard.undoMove();
-#else
-        float score = alphaBetaMax(alpha, beta, depthleft - 1, v.chessboard_, &line);
-#endif
+
         if (score <= alpha)
             return alpha;
         if (score < beta)
@@ -108,7 +116,7 @@ std::string Engine::findBestMove( uint32_t seconds )
 {MEASURE
     LINE line;
     float ab;
-    int depth = 6;
+    int depth = 2;
 
     if (chessboard_.isWhiteTurn())
         ab = alphaBetaMax(-10000, 10000, depth, chessboard_, &line);
