@@ -1,28 +1,8 @@
+# move generator using chess library to compare with our own results
+
 import chess
 import sys
 
-""""
-count = 0
-# level 1
-legal1 = board.legal_moves
-for m1 in legal1:
-    board.push(m1)
-    #print(board.fen())
-    # level 2
-    legal2 = board.legal_moves
-    for m2 in legal2:
-        board.push(m2)
-        #print(board.fen())
-        # level 3
-        legal3 = board.legal_moves
-        for m3 in legal3:
-            board.push(m3)
-            #print(board.fen())
-            count += 1
-            board.pop()        
-        board.pop()
-    board.pop()
-"""
 # global
 total_moves = 0
 
