@@ -4,8 +4,7 @@
 #include "util/ettune.h"
 
 #include <algorithm>
-//#include <thread>
-#include <boost/algorithm/string.hpp>
+#include <sstream>
 
 Chessboard::Chessboard()
 {MEASURE
@@ -80,7 +79,11 @@ void Chessboard::importFen(const std::string& fen)
     reset();
 
     std::vector<std::string> fen_strings;
-    boost::split(fen_strings, fen, boost::is_any_of("\t "));
+
+    std::istringstream f(fen);
+    std::string s;    
+    while (getline(f, s, ' ')) 
+        fen_strings.push_back(s);
 
     // 1. Import pieces
     // the place of the array to be filled next
