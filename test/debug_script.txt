@@ -1,0 +1,16 @@
+host x86_64
+
+b alphaBetaMax
+p alpha
+p beta
+p depthleft
+p chessboard.exportFen()
+c
+
+b alphaBetaMin
+p alpha
+p beta
+p depthleft
+p chessboard.exportFen()
+c
+

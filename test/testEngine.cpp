@@ -27,7 +27,8 @@ TEST_CASE("Test Engine")
     }*/
 
     Engine engine;
-    engine.loadFen("4k3/8/2r5/8/4B3/8/4PPPP/6KR b - - 0 1");
+    //engine.loadFen("4k3/8/2r5/8/4B3/8/4PPPP/6KR b - - 0 1");
+    engine.loadFen("7k/2Q5/4N3/8/4q3/8/5PPP/7K b - - 0 1");
 
     std::string best = engine.findBestMove(3);
 

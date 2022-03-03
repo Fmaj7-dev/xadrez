@@ -16,9 +16,9 @@ if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
   add_executable( check 
                 ${SOURCES}
-                testChessboard.cpp
-                testPosition.cpp
-                testMovement.cpp
+                #testChessboard.cpp
+                #testPosition.cpp
+                #testMovement.cpp
                 #testPerformance.cpp
                 testEngine.cpp
                 #testettune.cpp
